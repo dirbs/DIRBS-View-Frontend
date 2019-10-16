@@ -181,7 +181,8 @@ class Dashboard extends PureComponent {
                   TotalLostStolenCount: response.data.B16_lsds_devices_status.total_devices,
                   uniqueLostStolenDeviceTrend: uniqueDeviceTrend,
                   DeviceTrendData: response.data.B17_lsds_devices_trend.lsds_six_months_trend,
-                  MostStolenBrandsData: response.data.B18_lsds_top_brands
+                  MostStolenBrandsData: response.data.B18_lsds_top_brands,
+                  dashboardLastUpdate: response.data.dashboard_updation_started
                    });
               }
           })
