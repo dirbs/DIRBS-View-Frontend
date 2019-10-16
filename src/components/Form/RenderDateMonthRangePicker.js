@@ -72,7 +72,7 @@ export default class RenderDateMonthRangePicker extends PureComponent {
 
   //This function will update date renge according to granularity props.
 
-  componentWillReceiveProps(newProps){
+  UNSAFE_componentWillReceiveProps(newProps){
     if(this.state.startDate !==  null && newProps.granularity !== this.props.granularity)
     {
     if(newProps.granularity === "daily"){

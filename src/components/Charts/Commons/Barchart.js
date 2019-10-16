@@ -87,8 +87,8 @@ class Barchart extends PureComponent {
             payload.map((entry, index) => {
               const { dataKey, color } = entry
               return (
-                <li className="legend-item">
-                  <Surface width={10} height={10} viewBox="0 0 10 10">
+                <li className="legend-item" key={index}>
+                  <Surface width={10} height={10} viewbox="0 0 10 10">
                     <Symbols cx={6} cy={6} type="circle" size={50} fill={color} />
                   </Surface>
                   <span>{dataKey}</span>

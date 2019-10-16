@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import React, { PureComponent } from 'react';
 import { Container, Row, Col, Card, CardBody } from 'reactstrap';
 import SearchForm from './../../components/Form/SearchForm';
-import {unique_437_colors, getAuthHeader, instance, errors, getUniqueKeys, yAxisKeysCleaning, FormatDataForDataTable, getUserRole, getUserType, replaceCharacters, reorderData, scrollOsetTopPlus, fixFilOsetHeightMinus} from "./../../utilities/helpers";
+import {unique_437_colors, getAuthHeader, instance, errors, getUniqueKeys, yAxisKeysCleaning, FormatDataForDataTable, getUserRole, getUserType, replaceCharacters, scrollOsetTopPlus, fixFilOsetHeightMinus} from "./../../utilities/helpers";
 import Barchart from './../../components/Charts/Commons/Barchart';
 import Linechart from './../../components/Charts/Commons/Linechart';
 import DataTable from './../../components/DataTable/DataTable';
@@ -50,29 +50,19 @@ class Trends extends PureComponent {
       fading: false,
       isShowingFilters: true,      disableSaveButton: true,      uniqueBrands: [],
       uniqueModels: [],
-      core1Data: null,
-      core2Data: null,
-      core3Data: null,
-      core4Data: null,
-      core5Data: null,
-      core6Data: null,
-      core7Data: null,
-      core8Data: null,
-      core9Data: null,
-      core10Data: null,
-      loading1: false,
-      loading2: false,
-      loading3: false,
-      loading4: false,
-      loading5: false,
-      loading6: false,
-      loading7: false,
-      loading8: false,
-      loading9: false,
-      loading10: false,
-      core2HeaderData: null,
-      core3HeaderData: null,
-      core5HeaderData: null,
+      rCoreNumOfIMEIsData: null,
+      rCoreNetworOpData: null,
+      rCoreNetworOpNotifcationData: null,
+      rCoreRegistrationData: null,
+      rCoreTopModelDetailData: null,
+      rCoreNumOfIMEIsLoading: false,
+      rCoreNetworOpLoading: false,
+      rCoreNetworOpNotifcationLoading: false,
+      rCoreRegistrationLoading: false,
+      rCoreTopModelDetailLoading: false,
+      rCoreNetworOpHeaderData: null,
+      rCoreNetworOpNotifcationHeaderData: null,
+      rCoreTopModelDetailHeaderData: null,
       core6HeaderData: null,
       core10HeaderData: null,
       apiFetched: false,
@@ -92,7 +82,7 @@ class Trends extends PureComponent {
       layouts: { lg: props.initialLayout },
       layout: [],
       rowHeight: window.innerWidth < 1300 ? 3.7 : 10.6,
-      deletedObj: { aChart: false, bChart: false, cChart: false, dChart: false, eChart: false}
+      deletedObj: { rCoreRegistrationKey: false, rCoreTopModelDetailKey: false, rCoreNumOfIMEIsKey: false, rCoreNetworOpKey: false, rCoreNetworOpNotifcationKey: false}
     }
     this.getGraphDataFromServer = this.getGraphDataFromServer.bind(this);
     this.saveSearchQuery = this.saveSearchQuery.bind(this);
@@ -162,7 +152,7 @@ class Trends extends PureComponent {
   onRemoveItem(i) {
      this.setState({ layouts: { lg: _.reject(this.state.layout, { i: i })} }, () => {
       let { deletedObj } = this.state;
-      deletedObj[i + 'Chart'] = true;
+      deletedObj[i] = true;
       this.setState({ deletedObj: deletedObj });
     })
 
@@ -175,7 +165,7 @@ class Trends extends PureComponent {
         if(response.data.message) {
         } else {
           const retrievedChartConfig = response.data.config;
-          if(retrievedChartConfig !== undefined && retrievedChartConfig !== null)
+                if(retrievedChartConfig !== undefined && retrievedChartConfig !== null)
           {
             if(retrievedChartConfig.length !== 0)
             {
@@ -185,13 +175,13 @@ class Trends extends PureComponent {
               let isDeleted = true;
               retrievedChartConfig.map((ele, k) =>
               {
-                if(key.charAt(0) === retrievedChartConfig[k].i && retrievedChartConfig[k].w !== 1)
+                if(key === retrievedChartConfig[k].i && retrievedChartConfig[k].w !== 1)
                 {
                   isDeleted = false
                 }
                 return null;
               })
-              deletedObj[key.charAt(0) + 'Chart'] = isDeleted;
+              deletedObj[key] = isDeleted;
               return null;
             })
             this.setState({ layouts: { lg: retrievedChartConfig }, deletedObj: deletedObj  });
@@ -238,13 +228,13 @@ class Trends extends PureComponent {
     this.change = setTimeout(() => {
       this.setState({fading: false})
     }, 2000);
-    this.setState({ layouts: { lg: _.reject(this.state.layout, { i: 'd' })} }, () => {
+    this.setState({ layouts: { lg: _.reject(this.state.layout, { i: 'rCoreNetworOpKey' })} }, () => {
     let { deletedObj } = this.state;
-    deletedObj.aChart = false;
-    deletedObj.bChart = false;
-    deletedObj.cChart = false;
-    deletedObj.dChart = false;
-    deletedObj.eChart = false;
+    deletedObj.rCoreRegistrationKey = false;
+    deletedObj.rCoreTopModelDetailKey = false;
+    deletedObj.rCoreNumOfIMEIsKey = false;
+    deletedObj.rCoreNetworOpKey = false;
+    deletedObj.rCoreNetworOpNotifcationKey = false;
     this.setState({ deletedObj: deletedObj, layouts: { lg: this.props.initialLayout } });
     })
   }
@@ -291,7 +281,7 @@ class Trends extends PureComponent {
 // this method set initial state of the component and being called for search component
 
   saveSearchQuery(values) {
-    this.setState({ searchQuery: values, loading1: true, loading2: true, loading3: true, loading4: true, loading5: true, loading6: true, loading7: true, loading8: true, loading9: true, loading10: true, core1Data: [], core2Data: [], core3Data: [], core4Data: [], core5Data: [], core6Data: [], core7Data: [], core8Data: [], core9Data: [], core10Data: [], core2HeaderData: [], core3HeaderData: [], core5HeaderData: [], core6HeaderData: [], core10HeaderData: [], apiFetched: true} , () => {
+    this.setState({ searchQuery: values, rCoreNumOfIMEIsLoading: true, rCoreNetworOpLoading: true, rCoreNetworOpNotifcationLoading: true, rCoreRegistrationLoading: true, rCoreTopModelDetailLoading: true, rCoreNumOfIMEIsData: [], rCoreNetworOpData: [], rCoreNetworOpNotifcationData: [], rCoreRegistrationData: [], rCoreTopModelDetailData: [], rCoreNetworOpHeaderData: [], rCoreNetworOpNotifcationHeaderData: [], rCoreTopModelDetailHeaderData: [], core6HeaderData: [], core10HeaderData: [], apiFetched: true} , () => {
       this.updateTokenHOC(this.getGraphDataFromServer);
 	  })
   }
@@ -356,9 +346,9 @@ class Trends extends PureComponent {
       instance.post('/core-graphs', this.getCallParams('core_01'), config)
           .then(response => {
               if(response.data.message) {
-                this.setState({ loading1: false });
+                this.setState({ rCoreNumOfIMEIsLoading: false });
               } else {
-                this.setState({ core1Data: response.data.results, loading1: false, granularity: this.state.searchQuery.granularity});
+                this.setState({ rCoreNumOfIMEIsData: response.data.results, rCoreNumOfIMEIsLoading: false, granularity: this.state.searchQuery.granularity});
               }
           })
           .catch(error => {
@@ -372,11 +362,11 @@ const displayExceptionListOrder = ["Network Operator", "IMEIs", "IMSIs", "IMEI I
       instance.post('/core-graphs', this.getCallParams('core_02'), config)
           .then(response => {
               if(response.data.message) {
-                this.setState({ loading2: false });
+                this.setState({ rCoreNetworOpLoading: false });
               } else {
                 const formatedData = FormatDataForDataTable(response.data.segregated_result, false, exceptionListOrder);
                 //const reorderedData = reorderData(formatedData.content, reOrderHorizontalWiseExceptionList);
-                this.setState({ core2Data: formatedData.content, core2HeaderData: displayExceptionListOrder, loading2: false, granularity: this.state.searchQuery.granularity});
+                this.setState({ rCoreNetworOpData: formatedData.content, rCoreNetworOpHeaderData: displayExceptionListOrder, rCoreNetworOpLoading: false, granularity: this.state.searchQuery.granularity});
               }
           })
           .catch(error => {
@@ -411,11 +401,11 @@ const displayNotificationListOrder = [
           instance.post('/core-graphs', this.getCallParams('core_03'), config)
           .then(response => {
               if(response.data.message) {
-                this.setState({ loading3: false });
+                this.setState({ rCoreNetworOpNotifcationLoading: false });
               } else {
                 const formatedData = FormatDataForDataTable(response.data.segregated_result, false, notificationListOrder);
                 //const reorderedData = reorderData(formatedData.content, reOrderHorizontalWiseNotificationList);
-                this.setState({ core3Data: formatedData.content, core3HeaderData: displayNotificationListOrder, loading3: false, granularity: this.state.searchQuery.granularity});
+                this.setState({ rCoreNetworOpNotifcationData: formatedData.content, rCoreNetworOpNotifcationHeaderData: displayNotificationListOrder, rCoreNetworOpNotifcationLoading: false, granularity: this.state.searchQuery.granularity});
               }
           })
           .catch(error => {
@@ -428,11 +418,11 @@ const displayNotificationListOrder = [
           instance.post('/core-graphs', this.getCallParams('core_06'), config)
           .then(response => {
               if(response.data.message) {
-                this.setState({ loading4: false });
+                this.setState({ rCoreRegistrationLoading: false });
               } else {
                 let cleanData = yAxisKeysCleaning(response.data.results);
                 let uniqueModel = getUniqueKeys(cleanData);
-                this.setState({ core4Data: cleanData, uniqueModels: uniqueModel, loading4: false, granularity: this.state.searchQuery.granularity});
+                this.setState({ rCoreRegistrationData: cleanData, uniqueModels: uniqueModel, rCoreRegistrationLoading: false, granularity: this.state.searchQuery.granularity});
               }
           })
           .catch(error => {
@@ -447,12 +437,12 @@ const displayNotificationListOrder = [
           instance.post('/core-graphs', this.getCallParams('core_07'), config)
           .then(response => {
               if(response.data.message) {
-                this.setState({ loading5: false });
+                this.setState({ rCoreTopModelDetailLoading: false });
               } else {
                 let percentage = (_.sumBy(response.data.model_details, 'count') / response.data.total_count) * 100;
                 const formatedData = FormatDataForDataTable(response.data.model_details, false, topModelDetailsOrder);
                 const modifiedData = replaceCharacters(formatedData.content);
-                this.setState({ core5Data: modifiedData , core5HeaderData: displayTopModelDetailsOrder, loading5: false, granularity: this.state.searchQuery.granularity, topModelPercentage: percentage.toFixed(2) });
+                this.setState({ rCoreTopModelDetailData: modifiedData , rCoreTopModelDetailHeaderData: displayTopModelDetailsOrder, rCoreTopModelDetailLoading: false, granularity: this.state.searchQuery.granularity, topModelPercentage: percentage.toFixed(2) });
               }
           })
           .catch(error => {
@@ -480,7 +470,7 @@ const displayNotificationListOrder = [
   
 
   render() {
-    const {apiFetched, core1Data, core2Data, core3Data, core4Data,  core5Data, core2HeaderData, core3HeaderData, core5HeaderData, loading1, loading2, loading3, loading4, loading5, uniqueModels, granularity, totalImies, invalidImies, validImies, blacklistImies, exceptionImies, notifImies, deletedObj} = this.state;
+    const {apiFetched, rCoreNumOfIMEIsData, rCoreNetworOpData, rCoreNetworOpNotifcationData, rCoreRegistrationData,  rCoreTopModelDetailData, rCoreNetworOpHeaderData, rCoreNetworOpNotifcationHeaderData, rCoreTopModelDetailHeaderData, rCoreNumOfIMEIsLoading, rCoreNetworOpLoading, rCoreNetworOpNotifcationLoading, rCoreRegistrationLoading, rCoreTopModelDetailLoading, uniqueModels, granularity, totalImies, invalidImies, validImies, blacklistImies, exceptionImies, notifImies, deletedObj} = this.state;
     let topModelDetailsTitle = this.state.topModelPercentage === 0 ? <span>Top Model Details</span> : <span> Top Model Details <span className="in-header-info">(Representing {this.state.topModelPercentage}% of total count)</span></span>
     return (
       <Container fluid>
@@ -575,20 +565,20 @@ const displayNotificationListOrder = [
                   >
             {/* Here we are rendering reusable charts and passing them props according to the need. (Title, loading, data, xAxis and yAxes are the only mandatory props)   */}
                 
-                    <div name='chartA' key="a" className={deletedObj.aChart === true && 'hidden'}>
-                    <Barchart cardClass="card-primary" title="Registration List Top Models by IMEI Count" loading={loading4} data={core4Data} xAxis="x_axis" yAxes={uniqueModels} yAxisLabel="Number of IMEIs" colorArray={multiColors} granularity={granularity} info={regListTopModel} heightProp={this.getElementHeight(document.getElementsByName('chartA')[0])} removeChart={this.onRemoveItem} chartGridId={'a'}/>
+                    <div name='rCoreRegistrationKey' key="rCoreRegistrationKey" className={deletedObj.rCoreRegistrationKey === true && 'hidden'}>
+                    <Barchart cardClass="card-primary" title="Registration List Top Models by IMEI Count" loading={rCoreRegistrationLoading} data={rCoreRegistrationData} xAxis="x_axis" yAxes={uniqueModels} yAxisLabel="Number of IMEIs" colorArray={multiColors} granularity={granularity} info={regListTopModel} heightProp={this.getElementHeight(document.getElementsByName('rCoreRegistrationKey')[0])} removeChart={this.onRemoveItem} chartGridId={'rCoreRegistrationKey'}/>
                     </div>
-                    <div name='chartB' key="b" className={deletedObj.bChart === true && 'hidden'}>
-                    <DataTable cardClass="card-info" scrollHeight="100%" chartBoxClass="chart-box" title={topModelDetailsTitle} loading={loading5} headings={core5HeaderData} rows={core5Data}  granularity={granularity} info={topModelDetails} heightProp={this.getElementHeight(document.getElementsByName('chartB')[0])} removeChart={this.onRemoveItem} chartGridId={'b'}/>
+                    <div name='rCoreTopModelDetailKey' key="rCoreTopModelDetailKey" className={deletedObj.rCoreTopModelDetailKey === true && 'hidden'}>
+                    <DataTable cardClass="card-info" scrollHeight="100%" chartBoxClass="chart-box" title={topModelDetailsTitle} loading={rCoreTopModelDetailLoading} headings={rCoreTopModelDetailHeaderData} rows={rCoreTopModelDetailData}  granularity={granularity} info={topModelDetails} heightProp={this.getElementHeight(document.getElementsByName('rCoreTopModelDetailKey')[0])} removeChart={this.onRemoveItem} chartGridId={'rCoreTopModelDetailKey'}/>
                     </div>
-                    <div name='chartC' key="c" className={deletedObj.cChart === true && 'hidden'}>
-                    <Linechart cardClass="card-danger" title="Number of IMEIs in Black List" loading={loading1} data={core1Data} xAxis="x_axis" yAxisLabel="Number of IMEIs" yAxes={["y_axis"]} customName="Count" colorArray={multiColorStack.slice(3)} granularity={granularity} info={noOfbListIMEI} showLegend="false" heightProp={this.getElementHeight(document.getElementsByName('chartC')[0])} removeChart={this.onRemoveItem} chartGridId={'c'}/>
+                    <div name='rCoreNumOfIMEIsKey' key="rCoreNumOfIMEIsKey" className={deletedObj.rCoreNumOfIMEIsKey === true && 'hidden'}>
+                    <Linechart cardClass="card-danger" title="Number of IMEIs in Black List" loading={rCoreNumOfIMEIsLoading} data={rCoreNumOfIMEIsData} xAxis="x_axis" yAxisLabel="Number of IMEIs" yAxes={["y_axis"]} customName="Count" colorArray={multiColorStack.slice(3)} granularity={granularity} info={noOfbListIMEI} showLegend="false" heightProp={this.getElementHeight(document.getElementsByName('rCoreNumOfIMEIsKey')[0])} removeChart={this.onRemoveItem} chartGridId={'rCoreNumOfIMEIsKey'}/>
                     </div>    
-                    <div name='chartD' key="d" className={deletedObj.dChart === true && 'hidden'}>
-                    <DataTable cardClass="card-warning" chartBoxClass="chart-box" scrollHeight="auto" title="Network Operator Exception List Stats" loading={loading2} headings={core2HeaderData} rows={core2Data} granularity={granularity} info={networkExceptionList} heightProp={this.getElementHeight(document.getElementsByName('chartD')[0])} removeChart={this.onRemoveItem} chartGridId={'d'}/>
+                    <div name='rCoreNetworOpKey' key="rCoreNetworOpKey" className={deletedObj.rCoreNetworOpKey === true && 'hidden'}>
+                    <DataTable cardClass="card-warning" chartBoxClass="chart-box" scrollHeight="auto" title="Network Operator Exception List Stats" loading={rCoreNetworOpLoading} headings={rCoreNetworOpHeaderData} rows={rCoreNetworOpData} granularity={granularity} info={networkExceptionList} heightProp={this.getElementHeight(document.getElementsByName('rCoreNetworOpKey')[0])} removeChart={this.onRemoveItem} chartGridId={'rCoreNetworOpKey'}/>
                     </div> 
-                    <div name='chartE' key="e" className={deletedObj.eChart === true && 'hidden'}>
-                    <DataTable cardClass="card-info" scrollHeight="auto" title="Network Operator Notification List Stats" loading={loading3} headings={core3HeaderData} rows={core3Data}  granularity={granularity} info={networkNotificationList} heightProp={this.getElementHeight(document.getElementsByName('chartE')[0])} removeChart={this.onRemoveItem} chartGridId={'e'}/>
+                    <div name='rCoreNetworOpNotifcationKey' key="rCoreNetworOpNotifcationKey" className={deletedObj.rCoreNetworOpNotifcationKey === true && 'hidden'}>
+                    <DataTable cardClass="card-info" scrollHeight="auto" title="Network Operator Notification List Stats" loading={rCoreNetworOpNotifcationLoading} headings={rCoreNetworOpNotifcationHeaderData} rows={rCoreNetworOpNotifcationData}  granularity={granularity} info={networkNotificationList} heightProp={this.getElementHeight(document.getElementsByName('rCoreNetworOpNotifcationKey')[0])} removeChart={this.onRemoveItem} chartGridId={'rCoreNetworOpNotifcationKey'}/>
                     </div>
                 </ResponsiveReactGridLayout>
                 </div>
@@ -607,11 +597,11 @@ Trends.defaultProps = {
   cols: { lg: 100, md: 100, sm: 6, xs: 4, xxs: 2 },
   breakpoints: {lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0},
   initialLayout: [
-    {i: 'a', x: 0, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
-    {i: 'b', x: 50, y: 0, w: 50, h: (50 /100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
-    {i: 'c', x: 0, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
-    {i: 'd', x: 50, y: 0, w: 50, h: (50/100*56.6) , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
-    {i: 'e', x: 0, y: 5, w: 100, h: (40/100*56.6) , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'rCoreRegistrationKey', x: 0, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'rCoreTopModelDetailKey', x: 50, y: 0, w: 50, h: (50 /100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'rCoreNumOfIMEIsKey', x: 0, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'rCoreNetworOpKey', x: 50, y: 0, w: 50, h: (50/100*56.6) , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'rCoreNetworOpNotifcationKey', x: 0, y: 5, w: 100, h: (40/100*56.6) , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
   ]
 };
 

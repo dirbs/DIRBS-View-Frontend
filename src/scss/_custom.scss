@@ -2353,6 +2353,22 @@ article.bglite {
 	border-radius: 0.75rem;
 }
 
+.column-header {
+	color: $white;
+	padding: 0.2rem 0.75rem 0.3rem;
+	border-radius: 0.75rem 0.75rem 0 0;
+
+	h6 {
+		margin: 0;
+		padding: 0;
+	}
+
+	& + .radius-p75rem {
+		border-radius: 0 0 0.75rem 0.75rem;
+	}
+
+}
+
 .box-bgwhite {
 	background-color: #fff;
 }
@@ -2467,7 +2483,6 @@ article.bglite {
 			}
 
 			.approved-devices {
-				color: white;
 				margin-bottom: 0;
 				margin-top: 8px;
 
@@ -2761,7 +2776,7 @@ article.bglite {
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -59%);
-		color: #D6D6D6;
+		color: #0093C7;
 		margin-bottom: 0;
 	}
 
@@ -3216,4 +3231,11 @@ article.bglite {
 
 	}
 
+}
+
+.last-updated {
+
+	span {
+		font-family: 'SegoeUI-Semibold' !important;
+	}
 }

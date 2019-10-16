@@ -28,13 +28,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import React, { PureComponent } from 'react';
 import { Container, Row, Col, Card, CardBody } from 'reactstrap';
 import DateSearchForm from './../../components/Form/DateSearchForm';
-import {unique_437_colors, getAuthHeader, instance, errors, getUniqueKeys, yAxisKeysCleaning, FormatDataForDataTable, getUserRole, getUserType, secondaryPrimary, reorderData, scrollOsetTopPlus, fixFilOsetHeightMinus} from "./../../utilities/helpers";
+import {unique_437_colors, getAuthHeader, instance, errors, getUniqueKeys, yAxisKeysCleaning, FormatDataForDataTable, getUserRole, getUserType, secondaryPrimary, scrollOsetTopPlus, fixFilOsetHeightMinus} from "./../../utilities/helpers";
 import Barchart from './../../components/Charts/Commons/Barchart';
 import Linechart from './../../components/Charts/Commons/Linechart';
 import DataTable from './../../components/DataTable/DataTable';
 import SearchFilters from "./../../components/Form/SearchFilters";
 import {SearchInfo} from "./../../components/Help/SearchInfo";
-import { blueColors, SingleBarColors7, StackColors15, multiColorStack} from './../../utilities/chart_colors';
+import { blueColors, StackColorsSkin, StackColorsCombination, multiColorStack} from './../../utilities/chart_colors';
 import HeaderCards from './../../components/Cards/HeaderCards';
 import { numberOfPermanentPairs, topModelsbyPairedDevices, numOfDevicesPaired, topBrandByPairedDevices, numberofPairsCreatedByType, numberofPairsDeletedByType, devicePairedByTech, noOfSimChanged, identifierStatsByNetwork } from './../../utilities/reportsInfo';
 import svgSymbol from './../../images/svg_symbol.svg';
@@ -55,29 +55,29 @@ class Trends extends PureComponent {
       uniqueActivePVS: [],
       uniqueActivePairs: [],
       uniqueDeletedPairs: [],
-      dps1Data: null,
-      dps2Data: null,
-      dps3Data: null,
-      dps4AData: null,
-      dps4BData: null,
-      dps5Data: null,
-      dps6Data: null,
-      dps7Data: null,
-      dps8Data: null,
-      dps9Data: null,
-      dps10Data: null,
-      loading1: false,
-      loading2: false,
-      loading3: false,
-      loading4A: false,
-      loading4B: false,
-      loading5: false,
-      loading6: false,
-      loading7: false,
-      loading8: false,
-      loading9: false,
-      loading10: false,
-      dps10HeaderData: null,
+      dpsTopBrandsData: null,
+      dpsTopModelsData: null,
+      dpsRatTypesData: null,
+      dpsActivePSPairsData: null,
+      dpsDeletedPSPairsData: null,
+      dpsNoOfConnectionsData: null,
+      dpsNoOfDevicesData: null,
+      dpsTotalCreatedPairsData: null,
+      dpsTotalDeletedPairsData: null,
+      dpsTotalPermanentPairsData: null,
+      dpsUniquePairsTripletsData: null,
+      dpsTopBrandsLoading: false,
+      dpsTopModelsLoading: false,
+      dpsRatTypesLoading: false,
+      dpsActivePSPairsLoading: false,
+      dpsDeletedPSPairsLoading: false,
+      dpsNoOfConnectionsLoading: false,
+      dpsNoOfDevicesLoading: false,
+      dpsTotalCreatedPairsLoading: false,
+      dpsTotalDeletedPairsLoading: false,
+      dpsTotalPermanentPairsLoading: false,
+      dpsUniquePairsTripletsLoading: false,
+      dpsUniquePairsTripletsHeaderData: null,
       apiFetched: false,
       searchQuery: {},
       color:null,
@@ -95,7 +95,7 @@ class Trends extends PureComponent {
       layouts: { lg: props.initialLayout },
       layout: [],
       rowHeight: window.innerWidth < 1300 ? 3.7 : 10.6,
-      deletedObj: { aChart: false, bChart: false, cChart: false, dChart: false, eChart: false, fChart: false, gChart: false, hChart: false, iChart: false}
+      deletedObj: { dpsTotalPermanentPairsKey: false, dpsNoOfDevicesKey: false, dpsTopBrandsKey: false, dpsTopModelsKey: false, dpsActivePSPairsKey: false, dpsDeletedPSPairsKey: false, dpsRatTypesKey: false, dpsNoOfConnectionsKey: false, dpsUniquePairsTripletsKey: false}
     }
     this.getGraphDataFromServer = this.getGraphDataFromServer.bind(this);
     this.saveSearchQuery = this.saveSearchQuery.bind(this);
@@ -163,7 +163,7 @@ class Trends extends PureComponent {
   onRemoveItem(i) {
      this.setState({ layouts: { lg: _.reject(this.state.layout, { i: i })} }, () => {
       let { deletedObj } = this.state;
-      deletedObj[i + 'Chart'] = true;
+      deletedObj[i] = true;
       this.setState({ deletedObj: deletedObj });
     })
 
@@ -176,7 +176,7 @@ class Trends extends PureComponent {
         if(response.data.message) {
         } else {
           const retrievedChartConfig = response.data.config;
-          if(retrievedChartConfig !== undefined && retrievedChartConfig !== null)
+                if(retrievedChartConfig !== undefined && retrievedChartConfig !== null)
           {
             if(retrievedChartConfig.length !== 0)
             {
@@ -186,13 +186,13 @@ class Trends extends PureComponent {
               let isDeleted = true;
               retrievedChartConfig.map((ele, k) =>
               {
-                if(key.charAt(0) === retrievedChartConfig[k].i && retrievedChartConfig[k].w !== 1)
+                if(key === retrievedChartConfig[k].i && retrievedChartConfig[k].w !== 1)
                 {
                   isDeleted = false
                 }
                 return null;
               })
-              deletedObj[key.charAt(0) + 'Chart'] = isDeleted;
+              deletedObj[key] = isDeleted;
               return null;
             })
             this.setState({ layouts: { lg: retrievedChartConfig }, deletedObj: deletedObj  });
@@ -226,9 +226,9 @@ class Trends extends PureComponent {
         })
   }
 
-  getElementHeight = (e) => {
-    if (e) {
-      return e.offsetHeight - 70;
+  getElementHeight = (dpsActivePSPairsKey) => {
+    if (dpsActivePSPairsKey) {
+      return dpsActivePSPairsKey.offsetHeight - 70;
     }
     return 400
   }
@@ -239,17 +239,17 @@ class Trends extends PureComponent {
     this.change = setTimeout(() => {
       this.setState({fading: false})
     }, 2000);
-    this.setState({ layouts: { lg: _.reject(this.state.layout, { i: 'd' })} }, () => {
+    this.setState({ layouts: { lg: _.reject(this.state.layout, { i: 'dpsTopModelsKey' })} }, () => {
     let { deletedObj } = this.state;
-    deletedObj.aChart = false;
-    deletedObj.bChart = false;
-    deletedObj.cChart = false;
-    deletedObj.dChart = false;
-    deletedObj.eChart = false;
-    deletedObj.fChart = false;
-    deletedObj.gChart = false;
-    deletedObj.hChart = false;
-    deletedObj.iChart = false;
+    deletedObj.dpsTotalPermanentPairsKey = false;
+    deletedObj.dpsNoOfDevicesKey = false;
+    deletedObj.dpsTopBrandsKey = false;
+    deletedObj.dpsTopModelsKey = false;
+    deletedObj.dpsActivePSPairsKey = false;
+    deletedObj.dpsDeletedPSPairsKey = false;
+    deletedObj.dpsRatTypesKey = false;
+    deletedObj.dpsNoOfConnectionsKey = false;
+    deletedObj.dpsUniquePairsTripletsKey = false;
     this.setState({ deletedObj: deletedObj, layouts: { lg: this.props.initialLayout } });
     })
   }
@@ -311,7 +311,7 @@ showHideFilters = () =>
 // this method set initial state of the component and being called for search component
 
   saveSearchQuery(values) {
-    this.setState({ searchQuery: values, loading1: true, loading2: true, loading3: true, loading4A: true, loading4B: true, loading5: true, loading6: true, loading7: true, loading8: true, loading9: true, loading10: true, dps1Data: [], drs2Data: [], dps3Data: [], dps4AData: [], dps4BData: [], dps5Data: [], dps6Data: [], dps7Data: [], dps8Data: [], dps9Data: [], dps10Data: [], dps10HeaderData: [], apiFetched: true} , () => {
+    this.setState({ searchQuery: values, dpsTopBrandsLoading: true, dpsTopModelsLoading: true, dpsRatTypesLoading: true, dpsActivePSPairsLoading: true, dpsDeletedPSPairsLoading: true, dpsNoOfConnectionsLoading: true, dpsNoOfDevicesLoading: true, dpsTotalCreatedPairsLoading: true, dpsTotalDeletedPairsLoading: true, dpsTotalPermanentPairsLoading: true, dpsUniquePairsTripletsLoading: true, dpsTopBrandsData: [], drs2Data: [], dpsRatTypesData: [], dpsActivePSPairsData: [], dpsDeletedPSPairsData: [], dpsNoOfConnectionsData: [], dpsNoOfDevicesData: [], dpsTotalCreatedPairsData: [], dpsTotalDeletedPairsData: [], dpsTotalPermanentPairsData: [], dpsUniquePairsTripletsData: [], dpsUniquePairsTripletsHeaderData: [], apiFetched: true} , () => {
       this.updateTokenHOC(this.getGraphDataFromServer);
 	  })
   }
@@ -352,11 +352,11 @@ showHideFilters = () =>
       instance.post('/dps-01-top-brands', postData, config)
           .then(response => {
               if(response.data.message) {
-                this.setState({ loading1: false });
+                this.setState({ dpsTopBrandsLoading: false });
               } else {
                 let cleanData = yAxisKeysCleaning(response.data.results);
                 let topBrand = getUniqueKeys(cleanData);
-                this.setState({ dps1Data: cleanData, topBrands: topBrand, loading1: false, granularity: searchQuery.granularity});
+                this.setState({ dpsTopBrandsData: cleanData, topBrands: topBrand, dpsTopBrandsLoading: false, granularity: searchQuery.granularity});
               }
           })
           .catch(error => {
@@ -368,13 +368,13 @@ showHideFilters = () =>
       instance.post('/dps-02-top-models', postData, config)
           .then(response => {
               if(response.data.message) {
-                this.setState({ loading2: false });
+                this.setState({ dpsTopModelsLoading: false });
               } else {
                 let colors = this.getColorArray(1)
               
                 let cleanData = yAxisKeysCleaning(response.data.results);
                 let uniqueModels = getUniqueKeys(cleanData);
-                this.setState({ dps2Data: cleanData, uniqueModels: uniqueModels, loading2: false, color:colors, granularity: searchQuery.granularity});
+                this.setState({ dpsTopModelsData: cleanData, uniqueModels: uniqueModels, dpsTopModelsLoading: false, color:colors, granularity: searchQuery.granularity});
          }
           })
           .catch(error => {
@@ -386,11 +386,11 @@ showHideFilters = () =>
           instance.post('/dps-03-rat-types', postData, config)
           .then(response => {
               if(response.data.message) {
-                this.setState({ loading3: false });
+                this.setState({ dpsRatTypesLoading: false });
               } else {
                 let cleanData = yAxisKeysCleaning(response.data.results);
                 let techs = getUniqueKeys(cleanData);
-                this.setState({ dps3Data: cleanData, allTech: techs, loading3: false, granularity: searchQuery.granularity});
+                this.setState({ dpsRatTypesData: cleanData, allTech: techs, dpsRatTypesLoading: false, granularity: searchQuery.granularity});
               }
           })
           .catch(error => {
@@ -403,11 +403,11 @@ showHideFilters = () =>
           instance.post('/dps-04a-active-primary-secondary-pairs', postData, config)
           .then(response => {
               if(response.data.message) {
-                this.setState({ loading4A: false });
+                this.setState({ dpsActivePSPairsLoading: false });
               } else {
                 let cleanData = secondaryPrimary(response.data.results);
                 let uniqueActivePairs = getUniqueKeys(cleanData);
-                this.setState({ dps4AData: cleanData, loading4A: false, uniqueActivePairs: uniqueActivePairs, granularity: searchQuery.granularity});
+                this.setState({ dpsActivePSPairsData: cleanData, dpsActivePSPairsLoading: false, uniqueActivePairs: uniqueActivePairs, granularity: searchQuery.granularity});
               }
           })
           .catch(error => {
@@ -419,11 +419,11 @@ showHideFilters = () =>
           instance.post('/dps-04b-deleted-primary-secondary-pairs', postData, config)
           .then(response => {
               if(response.data.message) {
-                this.setState({ loading4B: false });
+                this.setState({ dpsDeletedPSPairsLoading: false });
               } else {
                 let cleanData = secondaryPrimary(response.data.results);
                 let uniqueDeletedPairs = getUniqueKeys(cleanData);
-                this.setState({ dps4BData: cleanData, loading4B: false, uniqueDeletedPairs: uniqueDeletedPairs, granularity: searchQuery.granularity});
+                this.setState({ dpsDeletedPSPairsData: cleanData, dpsDeletedPSPairsLoading: false, uniqueDeletedPairs: uniqueDeletedPairs, granularity: searchQuery.granularity});
               }
           })
           .catch(error => {
@@ -435,10 +435,10 @@ showHideFilters = () =>
           instance.post('/dps-05-num-of-connections', postData, config)
           .then(response => {
               if(response.data.message) {
-                this.setState({ loading5: false });
+                this.setState({ dpsNoOfConnectionsLoading: false });
               } else {
                 let cleanData = yAxisKeysCleaning(response.data.results);
-                this.setState({ dps5Data: cleanData, loading5: false, granularity: searchQuery.granularity});
+                this.setState({ dpsNoOfConnectionsData: cleanData, dpsNoOfConnectionsLoading: false, granularity: searchQuery.granularity});
               }
           })
           .catch(error => {
@@ -450,10 +450,10 @@ showHideFilters = () =>
           instance.post('/dps-06-num-of-devices', postData, config)
           .then(response => {
               if(response.data.message) {
-                this.setState({ loading6: false });
+                this.setState({ dpsNoOfDevicesLoading: false });
               } else {
                 let cleanData = yAxisKeysCleaning(response.data.results);
-                this.setState({ dps6Data: cleanData, loading6: false, granularity: searchQuery.granularity});
+                this.setState({ dpsNoOfDevicesData: cleanData, dpsNoOfDevicesLoading: false, granularity: searchQuery.granularity});
               }
           })
           .catch(error => {
@@ -465,9 +465,9 @@ showHideFilters = () =>
           instance.post('/dps-07-total-created-pairs', postData, config)
           .then(response => {
               if(response.data.message) {
-                this.setState({ loading7: false });
+                this.setState({ dpsTotalCreatedPairsLoading: false });
               } else {
-                this.setState({ dps7Data: response.data.results, loading7: false, granularity: searchQuery.granularity});
+                this.setState({ dpsTotalCreatedPairsData: response.data.results, dpsTotalCreatedPairsLoading: false, granularity: searchQuery.granularity});
               }
           })
           .catch(error => {
@@ -479,9 +479,9 @@ showHideFilters = () =>
           instance.post('/dps-08-total-deleted-pairs', postData, config)
           .then(response => {
               if(response.data.message) {
-                this.setState({ loading8: false });
+                this.setState({ dpsTotalDeletedPairsLoading: false });
               } else {
-                this.setState({ dps8Data: response.data.results, loading8: false, granularity: searchQuery.granularity});
+                this.setState({ dpsTotalDeletedPairsData: response.data.results, dpsTotalDeletedPairsLoading: false, granularity: searchQuery.granularity});
               }
           })
           .catch(error => {
@@ -493,9 +493,9 @@ showHideFilters = () =>
           instance.post('/dps-09-total-permanent-pairs', postData, config)
           .then(response => {
               if(response.data.message) {
-                this.setState({ loading9: false });
+                this.setState({ dpsTotalPermanentPairsLoading: false });
               } else {
-                this.setState({ dps9Data: response.data.results, loading9: false, granularity: searchQuery.granularity});
+                this.setState({ dpsTotalPermanentPairsData: response.data.results, dpsTotalPermanentPairsLoading: false, granularity: searchQuery.granularity});
               }
           })
           .catch(error => {
@@ -528,11 +528,11 @@ showHideFilters = () =>
           instance.post('/dps-10-unique-pairs-triplets', postData, config)
           .then(response => {
               if(response.data.message) {
-                this.setState({ loading10: false });
+                this.setState({ dpsUniquePairsTripletsLoading: false });
               } else {
                 const formatedData = FormatDataForDataTable(response.data.results, false, UniquePairsAndTripletsOrder);
                 //const reorderedData = reorderData(formatedData.content, reOrderHorizontalWiseUniquePairs);
-                this.setState({ dps10Data: formatedData.content, dps10HeaderData: displayUniquePairsAndTripletsOrder, loading10: false, granularity: searchQuery.granularity});
+                this.setState({ dpsUniquePairsTripletsData: formatedData.content, dpsUniquePairsTripletsHeaderData: displayUniquePairsAndTripletsOrder, dpsUniquePairsTripletsLoading: false, granularity: searchQuery.granularity});
               }
           })
           .catch(error => {
@@ -542,7 +542,7 @@ showHideFilters = () =>
   }
 
   render() {
-    const {apiFetched, dps1Data, dps2Data, dps3Data, dps4AData, dps4BData,  dps5Data,  dps6Data, dps9Data, dps10Data, dps10HeaderData, loading1, loading2, loading3, loading4A, loading4B, loading5, loading6, loading9, loading10, uniqueModels, topBrands, allTech, uniqueActivePairs, uniqueDeletedPairs, granularity, unique_devices, unique_imeis, unique_imsis, unique_msisdns, imei_imsi_pairs, imei_msisdn_pairs, deletedObj} = this.state;
+    const {apiFetched, dpsTopBrandsData, dpsTopModelsData, dpsRatTypesData, dpsActivePSPairsData, dpsDeletedPSPairsData,  dpsNoOfConnectionsData,  dpsNoOfDevicesData, dpsTotalPermanentPairsData, dpsUniquePairsTripletsData, dpsUniquePairsTripletsHeaderData, dpsTopBrandsLoading, dpsTopModelsLoading, dpsRatTypesLoading, dpsActivePSPairsLoading, dpsDeletedPSPairsLoading, dpsNoOfConnectionsLoading, dpsNoOfDevicesLoading, dpsTotalPermanentPairsLoading, dpsUniquePairsTripletsLoading, uniqueModels, topBrands, allTech, uniqueActivePairs, uniqueDeletedPairs, granularity, unique_devices, unique_imeis, unique_imsis, unique_msisdns, imei_imsi_pairs, imei_msisdn_pairs, deletedObj} = this.state;
     let countPrimarySecondaryExcluding = <span> Pairs Created <span className="in-header-info">(Primary & Secondary)</span></span>
     let countPrimarySecondaryDeleted = <span> Pairs Deleted <span className="in-header-info">(Primary & Secondary)</span></span>
     return (
@@ -638,32 +638,32 @@ showHideFilters = () =>
                     onWidthChange={this.onWidthChangeMethod}
                   > 
             {/* Here we are rendering reusable charts and passing them props according to the need. (Title, loading, data, xAxis and yAxes are the only mandatory props)   */}
-                    <div name='chartA' key="a" className={deletedObj.aChart === true && 'hidden'}>
-                    <Linechart cardClass="card-success" title="Number of Permanent Pairs" loading={loading9} data={dps9Data} xAxis="x_axis" yAxisLabel="Count of pairs" yAxes={["y_axis"]} customName="Count" colorArray={StackColors15.slice(5)} granularity={granularity} info={numberOfPermanentPairs} showLegend="false"  heightProp={this.getElementHeight(document.getElementsByName('chartA')[0])} removeChart={this.onRemoveItem} chartGridId={'a'}/>
+                    <div name='dpsTotalPermanentPairsKey' key="dpsTotalPermanentPairsKey" className={deletedObj.dpsTotalPermanentPairsKey === true && 'hidden'}>
+                    <Linechart cardClass="card-success" title="Number of Permanent Pairs" loading={dpsTotalPermanentPairsLoading} data={dpsTotalPermanentPairsData} xAxis="x_axis" yAxisLabel="Count of pairs" yAxes={["y_axis"]} customName="Count" colorArray={StackColorsCombination.slice(5)} granularity={granularity} info={numberOfPermanentPairs} showLegend="false"  heightProp={this.getElementHeight(document.getElementsByName('dpsTotalPermanentPairsKey')[0])} removeChart={this.onRemoveItem} chartGridId={'dpsTotalPermanentPairsKey'}/>
                     </div>
-                    <div name='chartB' key="b" className={deletedObj.bChart === true && 'hidden'}>
-                    <Linechart cardClass="card-primary" title="Number of Devices Paired " loading={loading6} data={dps6Data} xAxis="x_axis" yAxisLabel="Total count of devices" yAxes={["devices"]} colorArray={SingleBarColors7} granularity={granularity} info={numOfDevicesPaired}  showLegend="false" heightProp={this.getElementHeight(document.getElementsByName('chartB')[0])} removeChart={this.onRemoveItem} chartGridId={'b'}/>
+                    <div name='dpsNoOfDevicesKey' key="dpsNoOfDevicesKey" className={deletedObj.dpsNoOfDevicesKey === true && 'hidden'}>
+                    <Linechart cardClass="card-primary" title="Number of Devices Paired " loading={dpsNoOfDevicesLoading} data={dpsNoOfDevicesData} xAxis="x_axis" yAxisLabel="Total count of devices" yAxes={["devices"]} colorArray={StackColorsSkin} granularity={granularity} info={numOfDevicesPaired}  showLegend="false" heightProp={this.getElementHeight(document.getElementsByName('dpsNoOfDevicesKey')[0])} removeChart={this.onRemoveItem} chartGridId={'dpsNoOfDevicesKey'}/>
                     </div>
-                    <div name='chartC' key="c" className={deletedObj.cChart === true && 'hidden'}>
-                    <Barchart cardClass="card-info" title="Top Paired Brands" loading={loading1} data={dps1Data} xAxis="x_axis" yAxisLabel="Number of Devices" yAxes={topBrands} colorArray={multiColorStack} granularity={granularity} info={topBrandByPairedDevices}  heightProp={this.getElementHeight(document.getElementsByName('chartC')[0])} removeChart={this.onRemoveItem} chartGridId={'c'}/>
+                    <div name='dpsTopBrandsKey' key="dpsTopBrandsKey" className={deletedObj.dpsTopBrandsKey === true && 'hidden'}>
+                    <Barchart cardClass="card-info" title="Top Paired Brands" loading={dpsTopBrandsLoading} data={dpsTopBrandsData} xAxis="x_axis" yAxisLabel="Number of Devices" yAxes={topBrands} colorArray={multiColorStack} granularity={granularity} info={topBrandByPairedDevices}  heightProp={this.getElementHeight(document.getElementsByName('dpsTopBrandsKey')[0])} removeChart={this.onRemoveItem} chartGridId={'dpsTopBrandsKey'}/>
                     </div>    
-                    <div name='chartD' key="d" className={deletedObj.dChart === true && 'hidden'}>
-                    <Barchart cardClass="card-warning" title="Top Paired Models" loading={loading2} data={dps2Data} xAxis="x_axis" yAxisLabel="Number of Devices" yAxes={uniqueModels} colorArray={multiColorStack} granularity={granularity} info={topModelsbyPairedDevices}  heightProp={this.getElementHeight(document.getElementsByName('chartD')[0])} removeChart={this.onRemoveItem} chartGridId={'d'}/>
+                    <div name='dpsTopModelsKey' key="dpsTopModelsKey" className={deletedObj.dpsTopModelsKey === true && 'hidden'}>
+                    <Barchart cardClass="card-warning" title="Top Paired Models" loading={dpsTopModelsLoading} data={dpsTopModelsData} xAxis="x_axis" yAxisLabel="Number of Devices" yAxes={uniqueModels} colorArray={multiColorStack} granularity={granularity} info={topModelsbyPairedDevices}  heightProp={this.getElementHeight(document.getElementsByName('dpsTopModelsKey')[0])} removeChart={this.onRemoveItem} chartGridId={'dpsTopModelsKey'}/>
                     </div> 
-                    <div name='chartE' key="e" className={deletedObj.eChart === true && 'hidden'}>
-                    <Barchart cardClass="card-info" title={countPrimarySecondaryExcluding} loading={loading4A} data={dps4AData} xAxis="x_axis" yAxisLabel="Count of Pairs" yAxes={uniqueActivePairs} colorArray={blueColors} granularity={granularity} info={numberofPairsCreatedByType}  heightProp={this.getElementHeight(document.getElementsByName('chartE')[0])} removeChart={this.onRemoveItem} chartGridId={'e'}/>
+                    <div name='dpsActivePSPairsKey' key="dpsActivePSPairsKey" className={deletedObj.dpsActivePSPairsKey === true && 'hidden'}>
+                    <Barchart cardClass="card-info" title={countPrimarySecondaryExcluding} loading={dpsActivePSPairsLoading} data={dpsActivePSPairsData} xAxis="x_axis" yAxisLabel="Count of Pairs" yAxes={uniqueActivePairs} colorArray={blueColors} granularity={granularity} info={numberofPairsCreatedByType}  heightProp={this.getElementHeight(document.getElementsByName('dpsActivePSPairsKey')[0])} removeChart={this.onRemoveItem} chartGridId={'dpsActivePSPairsKey'}/>
                     </div>
-                    <div name='chartF' key="f" className={deletedObj.fChart === true && 'hidden'}>
-                    <Barchart cardClass="card-danger" title={countPrimarySecondaryDeleted} loading={loading4B} data={dps4BData} xAxis="x_axis" yAxisLabel="Count of Pairs" yAxes={uniqueDeletedPairs} colorArray={blueColors} granularity={granularity} info={numberofPairsDeletedByType} heightProp={this.getElementHeight(document.getElementsByName('chartF')[0])} removeChart={this.onRemoveItem} chartGridId={'f'}/>
+                    <div name='dpsDeletedPSPairsKey' key="dpsDeletedPSPairsKey" className={deletedObj.dpsDeletedPSPairsKey === true && 'hidden'}>
+                    <Barchart cardClass="card-danger" title={countPrimarySecondaryDeleted} loading={dpsDeletedPSPairsLoading} data={dpsDeletedPSPairsData} xAxis="x_axis" yAxisLabel="Count of Pairs" yAxes={uniqueDeletedPairs} colorArray={blueColors} granularity={granularity} info={numberofPairsDeletedByType} heightProp={this.getElementHeight(document.getElementsByName('dpsDeletedPSPairsKey')[0])} removeChart={this.onRemoveItem} chartGridId={'dpsDeletedPSPairsKey'}/>
                     </div>
-                    <div name='chartG' key="g" className={deletedObj.gChart === true && 'hidden'}>
-                    <Barchart cardClass="card-warning" title="Paired-Devices by Radio Access Technology" loading={loading3} data={dps3Data} xAxis="x_axis" yAxisLabel="Count of Pairs" yAxes={allTech} colorArray={multiColorStack} granularity={granularity} info={devicePairedByTech}  heightProp={this.getElementHeight(document.getElementsByName('chartG')[0])} removeChart={this.onRemoveItem} chartGridId={'g'}/>
+                    <div name='dpsRatTypesKey' key="dpsRatTypesKey" className={deletedObj.dpsRatTypesKey === true && 'hidden'}>
+                    <Barchart cardClass="card-warning" title="Paired-Devices by Radio Access Technology" loading={dpsRatTypesLoading} data={dpsRatTypesData} xAxis="x_axis" yAxisLabel="Count of Pairs" yAxes={allTech} colorArray={multiColorStack} granularity={granularity} info={devicePairedByTech}  heightProp={this.getElementHeight(document.getElementsByName('dpsRatTypesKey')[0])} removeChart={this.onRemoveItem} chartGridId={'dpsRatTypesKey'}/>
                     </div>
-                    <div name='chartH' key="h" className={deletedObj.hChart === true && 'hidden'}>
-                    <Barchart cardClass="card-success" title="Number of SIM Change Observed by Connections" loading={loading5} data={dps5Data} xAxis="x_axis" yAxisLabel="Count of IMSI & MSISDN" yAxes={["imsi", "msisdn"]} colorArray={multiColorStack.slice(12)} granularity={granularity} info={noOfSimChanged} heightProp={this.getElementHeight(document.getElementsByName('chartH')[0])} removeChart={this.onRemoveItem} chartGridId={'h'}/>
+                    <div name='dpsNoOfConnectionsKey' key="dpsNoOfConnectionsKey" className={deletedObj.dpsNoOfConnectionsKey === true && 'hidden'}>
+                    <Barchart cardClass="card-success" title="Number of SIM Change Observed by Connections" loading={dpsNoOfConnectionsLoading} data={dpsNoOfConnectionsData} xAxis="x_axis" yAxisLabel="Count of IMSI & MSISDN" yAxes={["imsi", "msisdn"]} colorArray={multiColorStack.slice(12)} granularity={granularity} info={noOfSimChanged} heightProp={this.getElementHeight(document.getElementsByName('dpsNoOfConnectionsKey')[0])} removeChart={this.onRemoveItem} chartGridId={'dpsNoOfConnectionsKey'}/>
                     </div>
-                    <div name='chartI' key="i" className={deletedObj.iChart === true && 'hidden'}>
-                    <DataTable cardClass="card-warning" scrollHeight="auto" title="Identifier Count by Network Operator" loading={loading10} headings={dps10HeaderData} rows={dps10Data} granularity={granularity} info={identifierStatsByNetwork}  heightProp={this.getElementHeight(document.getElementsByName('chartI')[0])} removeChart={this.onRemoveItem} chartGridId={'i'}/>
+                    <div name='dpsUniquePairsTripletsKey' key="dpsUniquePairsTripletsKey" className={deletedObj.dpsUniquePairsTripletsKey === true && 'hidden'}>
+                    <DataTable cardClass="card-warning" scrollHeight="auto" title="Identifier Count by Network Operator" loading={dpsUniquePairsTripletsLoading} headings={dpsUniquePairsTripletsHeaderData} rows={dpsUniquePairsTripletsData} granularity={granularity} info={identifierStatsByNetwork}  heightProp={this.getElementHeight(document.getElementsByName('dpsUniquePairsTripletsKey')[0])} removeChart={this.onRemoveItem} chartGridId={'dpsUniquePairsTripletsKey'}/>
                     </div>
               </ResponsiveReactGridLayout>
               </div>
@@ -682,15 +682,15 @@ Trends.defaultProps = {
   cols: { lg: 100, md: 100, sm: 6, xs: 4, xxs: 2 },
   breakpoints: {lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0},
   initialLayout: [
-    {i: 'a', x: 0, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
-    {i: 'b', x: 50, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
-    {i: 'c', x: 0, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
-    {i: 'd', x: 50, y: 0, w: 50, h: (50/100*56.6) , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
-    {i: 'e', x: 0, y: 0, w: 50, h: (50/100*56.6) , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
-    {i: 'f', x: 50, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
-    {i: 'g', x: 0, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
-    {i: 'h', x: 50, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
-    {i: 'i', x: 0, y: 50, w: 100, h: 20 , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'dpsTotalPermanentPairsKey', x: 0, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'dpsNoOfDevicesKey', x: 50, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'dpsTopBrandsKey', x: 0, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'dpsTopModelsKey', x: 50, y: 0, w: 50, h: (50/100*56.6) , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'dpsActivePSPairsKey', x: 0, y: 0, w: 50, h: (50/100*56.6) , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'dpsDeletedPSPairsKey', x: 50, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'dpsRatTypesKey', x: 0, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'dpsNoOfConnectionsKey', x: 50, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'dpsUniquePairsTripletsKey', x: 0, y: 50, w: 100, h: 20 , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
   ]
 };
 

@@ -54,33 +54,31 @@ class MonthYearTrends extends PureComponent {
       fading: false,
       isShowingFilters: true,      disableSaveButton: true,
       uniqueModels: [],
-      core1Data: null,
-      core2Data: null,
-      core3Data: null,
-      core4Data: null,
-      core5Data: null,
-      core6Data: null,
-      core7Data: null,
-      core8Data: null,
-      core9Data: null,
-      core10Data: null,
-      core11Data: null,
-      loading1: false,
-      loading2: false,
-      loading3: false,
-      loading4: false,
-      loading5: false,
-      loading6: false,
-      loading7: false,
-      loading8: false,
-      loading9: false,
-      loading10: false,
-      loading11: false,
-      core1HeaderData: null,
+      mCoreIdentifierCountData: null,
+      mCoreIdentifierTrendUniqueData: null,
+      mCoreLostStolenIMEIData: null,
+      mCoreBlacklistedData: null,
+      mCoreBlacklistViolationData: null,
+      mCoreViolationBySeletedData: null,
+      mCoreComplianceBreakdownData: null,
+      mCoreIdentifierTrendsData: null,
+      mCoreClassificationData: null,
+      mCoreConditionsBreakdownData: null,
+      mCoreIdentifierCountLoading: false,
+      mCoreIdentifierTrendUniqueLoading: false,
+      mCoreLostStolenIMEILoading: false,
+      mCoreBlacklistedLoading: false,
+      mCoreBlacklistViolationLoading: false,
+      mCoreViolationBySeletedLoading: false,
+      mCoreComplianceBreakdownLoading: false,
+      mCoreIdentifierTrendLoading: false,
+      mCoreClassificationLoading: false,
+      mCoreConditionsBreakdownLoading: false,
+      mCoreIdentifierCountHeaderData: null,
       core2HeaderData: null,
-      core3HeaderData: null,
-      core4HeaderData: null,
-      core5HeaderData: null,
+      mCoreBlacklistedHeaderData: null,
+      mCoreComplianceBreakdownHeaderData: null,
+      mCoreClassificationHeaderData: null,
       uniqueNetworks: [],
       apiFetched: false,
       searchQuery: {},
@@ -98,7 +96,7 @@ class MonthYearTrends extends PureComponent {
       layouts: { lg: props.initialLayout },
       layout: [],
       rowHeight: window.innerWidth < 1300 ? 3.7 : 10.6,
-      deletedObj: { aChart: false, bChart: false, cChart: false, dChart: false, eChart: false, fChart: false, gChart: false, hChart: false, iChart: false, jChart: false}
+      deletedObj: { mCoreIdentifierCountKey: false, mCoreIdentifierTrendUniqueKey: false, mCoreComplianceBreakdownKey: false, mCoreIdentifierTrendsKey: false, mCoreBlacklistViolationKey: false, mCoreLostStolenIMEIKey: false, mCoreBlacklistedKey: false, mCoreViolationBySeletedKey: false, mCoreConditionsBreakdownKey: false, mCoreClassificationKey: false}
     }
     this.getGraphDataFromServer = this.getGraphDataFromServer.bind(this);
     this.saveSearchQuery = this.saveSearchQuery.bind(this);
@@ -168,7 +166,7 @@ class MonthYearTrends extends PureComponent {
   onRemoveItem(i) {
      this.setState({ layouts: { lg: _.reject(this.state.layout, { i: i })} }, () => {
       let { deletedObj } = this.state;
-      deletedObj[i + 'Chart'] = true;
+      deletedObj[i] = true;
       this.setState({ deletedObj: deletedObj });
     })
 
@@ -181,7 +179,7 @@ class MonthYearTrends extends PureComponent {
         if(response.data.message) {
         } else {
           const retrievedChartConfig = response.data.config;
-          if(retrievedChartConfig !== undefined && retrievedChartConfig !== null)
+                if(retrievedChartConfig !== undefined && retrievedChartConfig !== null)
           {
             if(retrievedChartConfig.length !== 0)
             {
@@ -191,13 +189,13 @@ class MonthYearTrends extends PureComponent {
               let isDeleted = true;
               retrievedChartConfig.map((ele, k) =>
               {
-                if(key.charAt(0) === retrievedChartConfig[k].i && retrievedChartConfig[k].w !== 1)
+                if(key === retrievedChartConfig[k].i && retrievedChartConfig[k].w !== 1)
                 {
                   isDeleted = false
                 }
                 return null;
               })
-              deletedObj[key.charAt(0) + 'Chart'] = isDeleted;
+              deletedObj[key] = isDeleted;
               return null;
             })
             this.setState({ layouts: { lg: retrievedChartConfig }, deletedObj: deletedObj  });
@@ -244,18 +242,18 @@ class MonthYearTrends extends PureComponent {
     this.change = setTimeout(() => {
       this.setState({fading: false})
     }, 2000);
-    this.setState({ layouts: { lg: _.reject(this.state.layout, { i: 'd' })} }, () => {
+    this.setState({ layouts: { lg: _.reject(this.state.layout, { i: 'mCoreIdentifierTrendsKey' })} }, () => {
       let { deletedObj } = this.state;
-      deletedObj.aChart = false;
-      deletedObj.bChart = false;
-      deletedObj.cChart = false;
-      deletedObj.dChart = false;
-      deletedObj.eChart = false;
-      deletedObj.fChart = false;
-      deletedObj.gChart = false;
-      deletedObj.hChart = false;
-      deletedObj.iChart = false;
-      deletedObj.jChart = false;
+      deletedObj.mCoreIdentifierCountKey = false;
+      deletedObj.mCoreIdentifierTrendUniqueKey = false;
+      deletedObj.mCoreComplianceBreakdownKey = false;
+      deletedObj.mCoreIdentifierTrendsKey = false;
+      deletedObj.mCoreBlacklistViolationKey = false;
+      deletedObj.mCoreLostStolenIMEIKey = false;
+      deletedObj.mCoreBlacklistedKey = false;
+      deletedObj.mCoreViolationBySeletedKey = false;
+      deletedObj.mCoreConditionsBreakdownKey = false;
+      deletedObj.mCoreClassificationKey = false;
       this.setState({ layouts: { lg: this.props.initialLayout , deletedObj: deletedObj } });
     })
   }
@@ -314,7 +312,7 @@ class MonthYearTrends extends PureComponent {
   // this method set initial state of the component and being called for search component
 
   saveSearchQuery(values) {
-    this.setState({ searchQuery: values, loading1: true, loading2: true, loading3: true, loading4: true, loading5: true, loading6: true, loading7: true, loading8: true, loading9: true, loading10: true, loading11: true, core1Data: [], core2Data: [], core3Data: [], core4Data: [], core5Data: [], core6Data: [], core7Data: [], core8Data: [], core9Data: [], core10Data: [], core11Data: [], core1HeaderData: [], core2HeaderData: [], core3HeaderData: [], core4HeaderData: [], core5HeaderData: [], apiFetched: true }, () => {
+    this.setState({ searchQuery: values, mCoreIdentifierCountLoading: true, mCoreIdentifierTrendUniqueLoading: true, mCoreLostStolenIMEILoading: true, mCoreBlacklistedLoading: true, mCoreBlacklistViolationLoading: true, mCoreViolationBySeletedLoading: true, mCoreComplianceBreakdownLoading: true, mCoreIdentifierTrendLoading: true, mCoreClassificationLoading: true, mCoreConditionsBreakdownLoading: true, mCoreIdentifierCountData: [], mCoreIdentifierTrendUniqueData: [], mCoreLostStolenIMEIData: [], mCoreBlacklistedData: [], mCoreBlacklistViolationData: [], mCoreViolationBySeletedData: [], mCoreComplianceBreakdownData: [], mCoreIdentifierTrendsData: [], mCoreClassificationData: [], mCoreConditionsBreakdownData: [], mCoreIdentifierCountHeaderData: [], core2HeaderData: [], mCoreBlacklistedHeaderData: [], mCoreComplianceBreakdownHeaderData: [], mCoreClassificationHeaderData: [], apiFetched: true }, () => {
       this.updateTokenHOC(this.getGraphDataFromServer);
     })
   }
@@ -385,11 +383,11 @@ class MonthYearTrends extends PureComponent {
     instance.post('/core-graphs', this.getCallParams('core_04'), config)
       .then(response => {
         if (response.data.message) {
-          this.setState({ loading1: false });
+          this.setState({ mCoreIdentifierCountLoading: false });
         } else {
           const formatedData = verticleDataTableFormat([response.data]);
           const reorderedData = reorderData(formatedData, orderArrIdentifierCounts, replaceArrIdentifierCounts);
-          this.setState({ core1Data: reorderedData, core1HeaderData: ["Identifier", "Count"], loading1: false, granularity: this.state.searchQuery.granularity });
+          this.setState({ mCoreIdentifierCountData: reorderedData, mCoreIdentifierCountHeaderData: ["Identifier", "Count"], mCoreIdentifierCountLoading: false, granularity: this.state.searchQuery.granularity });
         }
       })
       .catch(error => {
@@ -401,9 +399,9 @@ class MonthYearTrends extends PureComponent {
     instance.post('/core-graphs', this.getCallParams('core_05'), config)
       .then(response => {
         if (response.data.message) {
-          this.setState({ loading2: false });
+          this.setState({ mCoreIdentifierTrendUniqueLoading: false });
         } else {
-          this.setState({ core2Data: response.data.monthly_results, loading2: false, granularity: this.state.searchQuery.granularity });
+          this.setState({ mCoreIdentifierTrendUniqueData: response.data.monthly_results, mCoreIdentifierTrendUniqueLoading: false, granularity: this.state.searchQuery.granularity });
         }
       })
       .catch(error => {
@@ -415,9 +413,9 @@ class MonthYearTrends extends PureComponent {
     instance.post('/core-graphs', this.getCallParams('core_09'), config)
       .then(response => {
         if (response.data.message) {
-          this.setState({ loading3: false });
+          this.setState({ mCoreLostStolenIMEILoading: false });
         } else {
-          this.setState({ core3Data: response.data.results, loading3: false, granularity: this.state.searchQuery.granularity });
+          this.setState({ mCoreLostStolenIMEIData: response.data.results, mCoreLostStolenIMEILoading: false, granularity: this.state.searchQuery.granularity });
         }
       })
       .catch(error => {
@@ -448,11 +446,11 @@ class MonthYearTrends extends PureComponent {
     instance.post('/core-graphs', this.getCallParams('core_10'), config)
       .then(response => {
         if (response.data.message) {
-          this.setState({ loading4: false });
+          this.setState({ mCoreBlacklistedLoading: false });
         } else {
           const formatedData = FormatDataForDataTable(response.data.results, false, orderArrBlackListed);
           //const reorderedData = reorderData(formatedData.content, reOrderHorizontalWiseBlackList)
-          this.setState({ core4Data: formatedData.content, core3HeaderData: displayBlackListed, loading4: false, granularity: this.state.searchQuery.granularity });
+          this.setState({ mCoreBlacklistedData: formatedData.content, mCoreBlacklistedHeaderData: displayBlackListed, mCoreBlacklistedLoading: false, granularity: this.state.searchQuery.granularity });
         }
       })
       .catch(error => {
@@ -464,9 +462,9 @@ class MonthYearTrends extends PureComponent {
     instance.post('/core-graphs', this.getCallParams('core_11'), config)
       .then(response => {
         if (response.data.message) {
-          this.setState({ loading5: false });
+          this.setState({ mCoreBlacklistViolationLoading: false });
         } else {
-          this.setState({ core5Data: response.data.day_ranges, loading5: false, granularity: this.state.searchQuery.granularity });
+          this.setState({ mCoreBlacklistViolationData: response.data.day_ranges, mCoreBlacklistViolationLoading: false, granularity: this.state.searchQuery.granularity });
         }
       })
       .catch(error => {
@@ -479,9 +477,9 @@ class MonthYearTrends extends PureComponent {
     instance.post('/core-graphs', this.getCallParams('core_12'), config)
       .then(response => {
         if (response.data.message) {
-          this.setState({ loading6: false });
+          this.setState({ mCoreViolationBySeletedLoading: false });
         } else {
-          this.setState({ core6Data: response.data.day_ranges, loading6: false, granularity: this.state.searchQuery.granularity });
+          this.setState({ mCoreViolationBySeletedData: response.data.day_ranges, mCoreViolationBySeletedLoading: false, granularity: this.state.searchQuery.granularity });
         }
       })
       .catch(error => {
@@ -504,11 +502,11 @@ class MonthYearTrends extends PureComponent {
     instance.post('/core-graphs', this.getCallParams('core_13'), config)
       .then(response => {
         if (response.data.message) {
-          this.setState({ loading7: false });
+          this.setState({ mCoreComplianceBreakdownLoading: false });
         } else {
           // const formatedData = verticleDataTableFormat([response.data.Compliance_Breakdown]);
           // const reorderedData = reorderData(formatedData, orderArrComplianceBreakDown);
-          this.setState({ core7Data: response.data.Compliance_Breakdown, core4HeaderData: ["Compliant and Non-Compliant as of selected date", "IMEIs", "IMEI %", "Triplets", "Triplet %"], loading7: false });
+          this.setState({ mCoreComplianceBreakdownData: response.data.Compliance_Breakdown, mCoreComplianceBreakdownHeaderData: ["Compliant and Non-Compliant as of selected date", "IMEIs", "IMEI %", "Triplets", "Triplet %"], mCoreComplianceBreakdownLoading: false });
         }
       })
       .catch(error => {
@@ -520,9 +518,9 @@ class MonthYearTrends extends PureComponent {
     instance.post('/core-graphs', this.getCallParams('core_14'), config)
       .then(response => {
         if (response.data.message) {
-          this.setState({ loading8: false });
+          this.setState({ mCoreIdentifierTrendLoading: false });
         } else {
-          this.setState({ core8Data: response.data.monthly_results, loading8: false });
+          this.setState({ mCoreIdentifierTrendsData: response.data.monthly_results, mCoreIdentifierTrendLoading: false });
         }
       })
       .catch(error => {
@@ -558,11 +556,11 @@ class MonthYearTrends extends PureComponent {
     instance.post('/core-graphs', this.getCallParams('core_16'), config)
       .then(response => {
         if (response.data.message) {
-          this.setState({ loading9: false });
+          this.setState({ mCoreClassificationLoading: false });
         } else {
           let formatedDataConditional = ConditionalBreakdownFormat(response.data);
           const formatedData = FormatDataForDataTable(formatedDataConditional, false, orderArrConditionalBreakdown);
-          this.setState({ core9Data: formatedData.content, core5HeaderData: mockHeaderConditionalBreakdown, loading9: false });
+          this.setState({ mCoreClassificationData: formatedData.content, mCoreClassificationHeaderData: mockHeaderConditionalBreakdown, mCoreClassificationLoading: false });
         }
       })
       .catch(error => {
@@ -579,9 +577,9 @@ class MonthYearTrends extends PureComponent {
         instance.post('/core-graphs', core15Params, config)
         .then(response => {
             if(response.data.message) {
-              this.setState({ loading11: false });
+              this.setState({ mCoreConditionsBreakdownLoading: false });
             } else {
-              this.setState({ core11Data: response.data.conditional_breakdown, loading11: false, granularity: this.state.searchQuery.granularity});
+              this.setState({ mCoreConditionsBreakdownData: response.data.conditional_breakdown, mCoreConditionsBreakdownLoading: false, granularity: this.state.searchQuery.granularity});
             }
         })
         .catch(error => {
@@ -590,7 +588,7 @@ class MonthYearTrends extends PureComponent {
   }
 
   render() {
-    const { apiFetched, core1Data, core2Data, core3Data, core4Data, core5Data, core6Data, core7Data, core8Data, core9Data, core11Data, core1HeaderData, core3HeaderData, core4HeaderData, core5HeaderData, loading1, loading2, loading3, loading4, loading5, loading6, loading7, loading8, loading9, loading11, granularity, totalImies, invalidImies, validImies, blacklistImies, exceptionImies, notifImies, deletedObj } = this.state;
+    const { apiFetched, mCoreIdentifierCountData, mCoreIdentifierTrendUniqueData, mCoreLostStolenIMEIData, mCoreBlacklistedData, mCoreBlacklistViolationData, mCoreViolationBySeletedData, mCoreComplianceBreakdownData, mCoreIdentifierTrendsData, mCoreClassificationData, mCoreConditionsBreakdownData, mCoreIdentifierCountHeaderData, mCoreBlacklistedHeaderData, mCoreComplianceBreakdownHeaderData, mCoreClassificationHeaderData, mCoreIdentifierCountLoading, mCoreIdentifierTrendUniqueLoading, mCoreLostStolenIMEILoading, mCoreBlacklistedLoading, mCoreBlacklistViolationLoading, mCoreViolationBySeletedLoading, mCoreComplianceBreakdownLoading, mCoreIdentifierTrendLoading, mCoreClassificationLoading, mCoreConditionsBreakdownLoading, granularity, totalImies, invalidImies, validImies, blacklistImies, exceptionImies, notifImies, deletedObj } = this.state;
     return (
       <Container fluid>
               <div className="search-box animated fadeIn">
@@ -687,35 +685,35 @@ class MonthYearTrends extends PureComponent {
                     rowHeight={this.state.rowHeight}
                     onWidthChange={this.onWidthChangeMethod}
                   > 
-                   <div name='chartA' key="a" className={deletedObj.aChart === true && 'hidden'}>
-                   <DataTable cardClass="card-primary" title="Identifier Counts" loading={loading1} headings={core1HeaderData} rows={core1Data} granularity={granularity} info={IdentifierCount} heightProp={this.getElementHeight(document.getElementsByName('chartA')[0])} removeChart={this.onRemoveItem} chartGridId={'a'} />
+                   <div name='mCoreIdentifierCountKey' key="mCoreIdentifierCountKey" className={deletedObj.mCoreIdentifierCountKey === true && 'hidden'}>
+                   <DataTable cardClass="card-primary" title="Identifier Counts" loading={mCoreIdentifierCountLoading} headings={mCoreIdentifierCountHeaderData} rows={mCoreIdentifierCountData} granularity={granularity} info={IdentifierCount} heightProp={this.getElementHeight(document.getElementsByName('mCoreIdentifierCountKey')[0])} removeChart={this.onRemoveItem} chartGridId={'mCoreIdentifierCountKey'} />
                     </div>
-                    <div name='chartB' key="b" className={deletedObj.bChart === true && 'hidden'}>
-                    <Linechart cardClass="card-primary" title="Identifier Trends of Unique IMEIs, IMSIs and MSISDNs" loading={loading2} data={core2Data} xAxis={"x_axis"} yAxisLabel="Identifier Trends Count" yAxes={["unique_imeis", "unique_imsis", "unique_msisdns"]} legendIconType="circle" colorArray={this.getColorArray(32)} granularity={granularity} info={IdentifierTrendsOfUnique} heightProp={this.getElementHeight(document.getElementsByName('chartB')[0])} removeChart={this.onRemoveItem} chartGridId={'b'}/>
+                    <div name='mCoreIdentifierTrendUniqueKey' key="mCoreIdentifierTrendUniqueKey" className={deletedObj.mCoreIdentifierTrendUniqueKey === true && 'hidden'}>
+                    <Linechart cardClass="card-primary" title="Identifier Trends of Unique IMEIs, IMSIs and MSISDNs" loading={mCoreIdentifierTrendUniqueLoading} data={mCoreIdentifierTrendUniqueData} xAxis={"x_axis"} yAxisLabel="Identifier Trends Count" yAxes={["unique_imeis", "unique_imsis", "unique_msisdns"]} legendIconType="circle" colorArray={this.getColorArray(32)} granularity={granularity} info={IdentifierTrendsOfUnique} heightProp={this.getElementHeight(document.getElementsByName('mCoreIdentifierTrendUniqueKey')[0])} removeChart={this.onRemoveItem} chartGridId={'mCoreIdentifierTrendUniqueKey'}/>
                     </div>
-                    <div name='chartC' key="c" className={deletedObj.cChart === true && 'hidden'}>
-                    <ComplianceBreakdownTable cardClass="card-warning" title="Compliance Breakdown" loading={loading7} headings={core4HeaderData} rows={core7Data} info={complianceBreakdown} heightProp={this.getElementHeight(document.getElementsByName('chartC')[0])} removeChart={this.onRemoveItem} chartGridId={'c'}/>
+                    <div name='mCoreComplianceBreakdownKey' key="mCoreComplianceBreakdownKey" className={deletedObj.mCoreComplianceBreakdownKey === true && 'hidden'}>
+                    <ComplianceBreakdownTable cardClass="card-warning" title="Compliance Breakdown" loading={mCoreComplianceBreakdownLoading} headings={mCoreComplianceBreakdownHeaderData} rows={mCoreComplianceBreakdownData} info={complianceBreakdown} heightProp={this.getElementHeight(document.getElementsByName('mCoreComplianceBreakdownKey')[0])} removeChart={this.onRemoveItem} chartGridId={'mCoreComplianceBreakdownKey'}/>
                     </div>    
-                    <div name='chartD' key="d" className={deletedObj.dChart === true && 'hidden'}>
-                    <Linechart cardClass="card-primary" title="Identifier Trends" loading={loading8} data={core8Data} xAxis={"x_axis"} yAxisLabel="Percentage of Trends" yAxes={["compliant_imeis %", "non-compliant_imeis %"]} legendIconType="circle" colorArray={this.getColorArray(32)} info={IdentifierTrends}  heightProp={this.getElementHeight(document.getElementsByName('chartD')[0])} removeChart={this.onRemoveItem} chartGridId={'d'}/>
+                    <div name='mCoreIdentifierTrendsKey' key="mCoreIdentifierTrendsKey" className={deletedObj.mCoreIdentifierTrendsKey === true && 'hidden'}>
+                    <Linechart cardClass="card-primary" title="Identifier Trends" loading={mCoreIdentifierTrendLoading} data={mCoreIdentifierTrendsData} xAxis={"x_axis"} yAxisLabel="Percentage of Trends" yAxes={["compliant_imeis %", "non-compliant_imeis %"]} legendIconType="circle" colorArray={this.getColorArray(32)} info={IdentifierTrends}  heightProp={this.getElementHeight(document.getElementsByName('mCoreIdentifierTrendsKey')[0])} removeChart={this.onRemoveItem} chartGridId={'mCoreIdentifierTrendsKey'}/>
                     </div> 
-                    <div name='chartE' key="e" className={deletedObj.eChart === true && 'hidden'}>
-                    <HorizontalBarSegregateChart cardClass="card-success" title="Blacklist Violations by Days Past Block Date" yAxisLabel="Days Past Block Date" loading={loading5} data={core5Data} colorArray={this.getColorArray(20)} granularity={granularity} info={nationalBlacklist} heightProp={this.getElementHeight(document.getElementsByName('chartE')[0])} removeChart={this.onRemoveItem} chartGridId={'e'}/>
+                    <div name='mCoreBlacklistViolationKey' key="mCoreBlacklistViolationKey" className={deletedObj.mCoreBlacklistViolationKey === true && 'hidden'}>
+                    <HorizontalBarSegregateChart cardClass="card-success" title="Blacklist Violations by Days Past Block Date" yAxisLabel="Days Past Block Date" loading={mCoreBlacklistViolationLoading} data={mCoreBlacklistViolationData} colorArray={this.getColorArray(20)} granularity={granularity} info={nationalBlacklist} heightProp={this.getElementHeight(document.getElementsByName('mCoreBlacklistViolationKey')[0])} removeChart={this.onRemoveItem} chartGridId={'mCoreBlacklistViolationKey'}/>
                     </div>
-                    <div name='chartF' key="f" className={deletedObj.fChart === true && 'hidden'}>
-                    <Piechart  cardClass="card-danger" title="Lost/Stolen IMEI's Seen On Network" loading={loading3} data={core3Data} value="value" colorArray={blueShadsColors} granularity={granularity}  innerRadiusProp={70} paddingProp={2} info={lostStolenIMEIOnNetwork} heightProp={this.getElementHeight(document.getElementsByName('chartF')[0])} removeChart={this.onRemoveItem} chartGridId={'f'}/>
+                    <div name='mCoreLostStolenIMEIKey' key="mCoreLostStolenIMEIKey" className={deletedObj.mCoreLostStolenIMEIKey === true && 'hidden'}>
+                    <Piechart  cardClass="card-danger" title="Lost/Stolen IMEI's Seen On Network" loading={mCoreLostStolenIMEILoading} data={mCoreLostStolenIMEIData} value="value" colorArray={blueShadsColors} granularity={granularity}  innerRadiusProp={70} paddingProp={2} info={lostStolenIMEIOnNetwork} heightProp={this.getElementHeight(document.getElementsByName('mCoreLostStolenIMEIKey')[0])} removeChart={this.onRemoveItem} chartGridId={'mCoreLostStolenIMEIKey'}/>
                     </div>
-                    <div name='chartG' key="g" className={deletedObj.gChart === true && 'hidden'}>
-                    <DataTable cardClass="card-warning" title="Blacklist IMEIs per Operator and Reason" loading={loading4} headings={core3HeaderData} rows={core4Data} granularity={granularity} info={operatorWiseReason} heightProp={this.getElementHeight(document.getElementsByName('chartG')[0])} removeChart={this.onRemoveItem} chartGridId={'g'}/>
+                    <div name='mCoreBlacklistedKey' key="mCoreBlacklistedKey" className={deletedObj.mCoreBlacklistedKey === true && 'hidden'}>
+                    <DataTable cardClass="card-warning" title="Blacklist IMEIs per Operator and Reason" loading={mCoreBlacklistedLoading} headings={mCoreBlacklistedHeaderData} rows={mCoreBlacklistedData} granularity={granularity} info={operatorWiseReason} heightProp={this.getElementHeight(document.getElementsByName('mCoreBlacklistedKey')[0])} removeChart={this.onRemoveItem} chartGridId={'mCoreBlacklistedKey'}/>
                     </div>
-                    <div name='chartH' key="h" className={ (this.state.searchQuery.mno === "all" || deletedObj.hChart === true) && 'hidden'}>
-                    <HorizontalBarSegregateChart cardClass="card-danger" title="Violations By Selected Operator" loading={loading6} data={core6Data} colorArray={this.getColorArray(36)} granularity={granularity} info={nationalBlacklistByMNO} heightProp={this.getElementHeight(document.getElementsByName('chartH')[0])} removeChart={this.onRemoveItem} chartGridId={'h'}/>
+                    <div name='mCoreViolationBySeletedKey' key="mCoreViolationBySeletedKey" className={ (this.state.searchQuery.mno === "all" || deletedObj.mCoreViolationBySeletedKey === true) && 'hidden'}>
+                    <HorizontalBarSegregateChart cardClass="card-danger" title="Violations By Selected Operator" loading={mCoreViolationBySeletedLoading} data={mCoreViolationBySeletedData} colorArray={this.getColorArray(36)} granularity={granularity} info={nationalBlacklistByMNO} heightProp={this.getElementHeight(document.getElementsByName('mCoreViolationBySeletedKey')[0])} removeChart={this.onRemoveItem} chartGridId={'mCoreViolationBySeletedKey'}/>
                     </div>
-                    <div name='chartI' key="i" className={deletedObj.iChart === true && 'hidden'}>
-                    <Piechart cardClass="card-success" title="Conditions Breakdown" loading={loading11} data={core11Data} value="value" colorArray={BoxesColors} granularity={granularity} innerRadiusProp={70} paddingProp={2} info={conditionalBreakDownIMEI}  heightProp={this.getElementHeight(document.getElementsByName('chartI')[0])} removeChart={this.onRemoveItem} chartGridId={'i'}/>
+                    <div name='mCoreConditionsBreakdownKey' key="mCoreConditionsBreakdownKey" className={deletedObj.mCoreConditionsBreakdownKey === true && 'hidden'}>
+                    <Piechart cardClass="card-success" title="Conditions Breakdown" loading={mCoreConditionsBreakdownLoading} data={mCoreConditionsBreakdownData} value="value" colorArray={BoxesColors} granularity={granularity} innerRadiusProp={70} paddingProp={2} info={conditionalBreakDownIMEI}  heightProp={this.getElementHeight(document.getElementsByName('mCoreConditionsBreakdownKey')[0])} removeChart={this.onRemoveItem} chartGridId={'mCoreConditionsBreakdownKey'}/>
                     </div>
-                    <div name='chartJ' key="j" className={deletedObj.jChart === true && 'hidden'}>
-                    <DataTable cardClass="card-primary" title="Classification Conditions Breakdown" loading={loading9} headings={core5HeaderData} rows={core9Data} info={conditionalBreakdown} heightProp={this.getElementHeight(document.getElementsByName('chartJ')[0])} removeChart={this.onRemoveItem} chartGridId={'j'} />
+                    <div name='mCoreClassificationKey' key="mCoreClassificationKey" className={deletedObj.mCoreClassificationKey === true && 'hidden'}>
+                    <DataTable cardClass="card-primary" title="Classification Conditions Breakdown" loading={mCoreClassificationLoading} headings={mCoreClassificationHeaderData} rows={mCoreClassificationData} info={conditionalBreakdown} heightProp={this.getElementHeight(document.getElementsByName('mCoreClassificationKey')[0])} removeChart={this.onRemoveItem} chartGridId={'mCoreClassificationKey'} />
                     </div>
                   </ResponsiveReactGridLayout>
               </div>
@@ -734,16 +732,16 @@ MonthYearTrends.defaultProps = {
   cols: { lg: 100, md: 100, sm: 6, xs: 4, xxs: 2 },
   breakpoints: {lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0},
   initialLayout: [
-    {i: 'a', x: 0, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
-    {i: 'b', x: 50, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
-    {i: 'c', x: 0, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6)},
-    {i: 'd', x: 50, y: 0, w: 50, h: (50/100*56.6) , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
-    {i: 'e', x: 0, y: 0, w: 50, h: (50/100*56.6) , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
-    {i: 'f', x: 50, y: 0, w: 50, h: (50/100*56.6)  , isResizable: false },
-    {i: 'g', x: 0, y: 4, w: 100, h: (50/100*56.6)   , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
-    {i: 'h', x: 50, y: 2, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
-    {i: 'i', x: 0, y: 2, w: 50, h: (50/100*56.6) , isResizable: false },
-    {i: 'j', x: 0, y: 10, w: 100, h: (50/100*56.6) , minW: 33, minH: 20, maxW: 100, maxH: 100  }
+    {i: 'mCoreIdentifierCountKey', x: 0, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'mCoreIdentifierTrendUniqueKey', x: 50, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'mCoreComplianceBreakdownKey', x: 0, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6)},
+    {i: 'mCoreIdentifierTrendsKey', x: 50, y: 0, w: 50, h: (50/100*56.6) , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'mCoreBlacklistViolationKey', x: 0, y: 0, w: 50, h: (50/100*56.6) , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'mCoreLostStolenIMEIKey', x: 50, y: 0, w: 50, h: (50/100*56.6)  , isResizable: false },
+    {i: 'mCoreBlacklistedKey', x: 0, y: 4, w: 100, h: (50/100*56.6)   , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'mCoreViolationBySeletedKey', x: 50, y: 2, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'mCoreConditionsBreakdownKey', x: 0, y: 2, w: 50, h: (50/100*56.6) , isResizable: false },
+    {i: 'mCoreClassificationKey', x: 0, y: 10, w: 100, h: (50/100*56.6) , minW: 33, minH: 20, maxW: 100, maxH: 100  }
   ]
 };
 

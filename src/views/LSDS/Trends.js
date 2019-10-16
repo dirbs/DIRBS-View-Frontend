@@ -34,7 +34,7 @@ import Linechart from './../../components/Charts/Commons/Linechart';
 import Areachart from './../../components/Charts/Commons/AreaChart';
 import SearchFilters from "./../../components/Form/SearchFilters";
 import {SearchInfo} from "./../../components/Help/SearchInfo";
-import { stackBar20, multiColorStack, BoxesColors } from './../../utilities/chart_colors';
+import { stackBarTwentyColors, multiColorStack, BoxesColors } from './../../utilities/chart_colors';
 import HeaderCards from '../../components/Cards/HeaderCards';
 import { noOfReportedDevices, noOfTopStolenBrands, statusOfReportedDevices, topModelsbyReportedDevices, noOfLostStolenDevices } from './../../utilities/reportsInfo';
 import svgSymbol from './../../images/svg_symbol.svg';
@@ -54,16 +54,16 @@ class Trends extends PureComponent {
       uniqueModels: [],
       uniqueIncidents: [],
       uniqueStatus: [],
-      lsds1Data: null,
-      lsds2Data: null,
-      lsds3Data: null,
-      lsds4Data: null,
-      lsds5Data: null,
-      loading1: false,
-      loading2: false,
-      loading3: false,
-      loading4: false,
-      loading5: false,
+      lsdsTotalReportedDevicesData: null,
+      lsdsIncidentTypeData: null,
+      lsdsCaseStatusData: null,
+      lsdsTopStolenBrandsData: null,
+      lsdsTopStolenModelsData: null,
+      lsdsTotalReportedDevicesLoading: false,
+      lsdsIncidentTypeLoading: false,
+      lsdsCaseStatusLoading: false,
+      lsdsTopStolenBrandsLoading: false,
+      lsdsTopStolenModelsLoading: false,
       apiFetched: false,
       searchQuery: {},
       granularity: "",
@@ -80,7 +80,7 @@ class Trends extends PureComponent {
       layouts: { lg: props.initialLayout },
       layout: [],
       rowHeight: window.innerWidth < 1300 ? 3.7 : 10.6,
-      deletedObj: { aChart: false, bChart: false, cChart: false, dChart: false, eChart: false}
+      deletedObj: { lsdsTotalReportedDevicesKey: false, lsdsCaseStatusKey: false, lsdsTopStolenBrandsKey: false, lsdsTopStolenModelsKey: false, lsdsIncidentTypeKey: false}
     }
     this.getGraphDataFromServer = this.getGraphDataFromServer.bind(this);
     this.saveSearchQuery = this.saveSearchQuery.bind(this);
@@ -144,7 +144,7 @@ class Trends extends PureComponent {
   onRemoveItem(i) {
      this.setState({ layouts: { lg: _.reject(this.state.layout, { i: i })} }, () => {
       let { deletedObj } = this.state;
-      deletedObj[i + 'Chart'] = true;
+      deletedObj[i] = true;
       this.setState({ deletedObj: deletedObj });
     })
 
@@ -157,7 +157,7 @@ class Trends extends PureComponent {
         if(response.data.message) {
         } else {
           const retrievedChartConfig = response.data.config;
-          if(retrievedChartConfig !== undefined && retrievedChartConfig !== null)
+                if(retrievedChartConfig !== undefined && retrievedChartConfig !== null)
           {
             if(retrievedChartConfig.length !== 0)
             {
@@ -167,13 +167,13 @@ class Trends extends PureComponent {
               let isDeleted = true;
               retrievedChartConfig.map((ele, k) =>
               {
-                if(key.charAt(0) === retrievedChartConfig[k].i && retrievedChartConfig[k].w !== 1)
+                if(key === retrievedChartConfig[k].i && retrievedChartConfig[k].w !== 1)
                 {
                   isDeleted = false
                 }
                 return null;
               })
-              deletedObj[key.charAt(0) + 'Chart'] = isDeleted;
+              deletedObj[key] = isDeleted;
               return null;
             })
             this.setState({ layouts: { lg: retrievedChartConfig }, deletedObj: deletedObj  });
@@ -276,20 +276,20 @@ showHideFilters = () =>
     this.change = setTimeout(() => {
       this.setState({fading: false})
     }, 2000);
-    this.setState({ layouts: { lg: _.reject(this.state.layout, { i: 'd' })} }, () => {
+    this.setState({ layouts: { lg: _.reject(this.state.layout, { i: 'lsdsTopStolenModelsKey' })} }, () => {
     let { deletedObj } = this.state;
-    deletedObj.aChart = false;
-    deletedObj.bChart = false;
-    deletedObj.cChart = false;
-    deletedObj.dChart = false;
-    deletedObj.eChart = false;
+    deletedObj.lsdsTotalReportedDevicesKey = false;
+    deletedObj.lsdsCaseStatusKey = false;
+    deletedObj.lsdsTopStolenBrandsKey = false;
+    deletedObj.lsdsTopStolenModelsKey = false;
+    deletedObj.lsdsIncidentTypeKey = false;
     this.setState({ deletedObj: deletedObj, layouts: { lg: this.props.initialLayout } });
     })
   }
 
 
   saveSearchQuery(values) {
-    this.setState({ searchQuery: values, loading1: true, loading2: true, loading3: true, loading4: true, loading5: true, lsds1Data: [], lsds2Data: [], lsds3Data: [], lsds4Data: [], lsds5Data: [], apiFetched: true} , () => {
+    this.setState({ searchQuery: values, lsdsTotalReportedDevicesLoading: true, lsdsIncidentTypeLoading: true, lsdsCaseStatusLoading: true, lsdsTopStolenBrandsLoading: true, lsdsTopStolenModelsLoading: true, lsdsTotalReportedDevicesData: [], lsdsIncidentTypeData: [], lsdsCaseStatusData: [], lsdsTopStolenBrandsData: [], lsdsTopStolenModelsData: [], apiFetched: true} , () => {
       this.updateTokenHOC(this.getGraphDataFromServer);
 	  })
   }
@@ -323,9 +323,9 @@ showHideFilters = () =>
       instance.post('/lsds-01-total-reported-devices', postData, config)
           .then(response => {
               if(response.data.message) {
-                this.setState({ loading1: false });
+                this.setState({ lsdsTotalReportedDevicesLoading: false });
               } else {
-                this.setState({ lsds1Data: response.data.results, loading1: false, granularity: searchQuery.granularity});
+                this.setState({ lsdsTotalReportedDevicesData: response.data.results, lsdsTotalReportedDevicesLoading: false, granularity: searchQuery.granularity});
               }
           })
           .catch(error => {
@@ -336,7 +336,7 @@ showHideFilters = () =>
           .then(response => {
                 let cleanData = removeDevicesLabel(response.data.results);
                 let uniqueIncidents = getUniqueKeys(cleanData);
-                this.setState({ lsds2Data: cleanData, loading2: false, uniqueIncidents: uniqueIncidents, granularity: searchQuery.granularity});
+                this.setState({ lsdsIncidentTypeData: cleanData, lsdsIncidentTypeLoading: false, uniqueIncidents: uniqueIncidents, granularity: searchQuery.granularity});
           })
           .catch(error => {
               errors(this, error);
@@ -345,11 +345,11 @@ showHideFilters = () =>
       instance.post('/lsds-03-case-status-chart', postData, config)
           .then(response => {
               if(response.data.message) {
-                this.setState({ loading3: false });
+                this.setState({ lsdsCaseStatusLoading: false });
               } else {
                 let cleanData = yAxisKeysCleaning(response.data.results);
                 let uniqueStatus = getUniqueKeys(cleanData);
-                this.setState({ lsds3Data: cleanData, loading3: false, uniqueStatus: uniqueStatus, granularity: searchQuery.granularity});
+                this.setState({ lsdsCaseStatusData: cleanData, lsdsCaseStatusLoading: false, uniqueStatus: uniqueStatus, granularity: searchQuery.granularity});
               }
           })
           .catch(error => {
@@ -360,7 +360,7 @@ showHideFilters = () =>
           .then(response => {
               let cleanData = yAxisKeysCleaning(response.data.results);
               let uniqueBrands = getUniqueKeys(cleanData);
-              this.setState({ lsds4Data: cleanData, uniqueBrands: uniqueBrands, loading4: false, granularity: searchQuery.granularity});
+              this.setState({ lsdsTopStolenBrandsData: cleanData, uniqueBrands: uniqueBrands, lsdsTopStolenBrandsLoading: false, granularity: searchQuery.granularity});
           })
           .catch(error => {
               errors(this, error);
@@ -370,7 +370,7 @@ showHideFilters = () =>
           .then(response => {
               let cleanData = yAxisKeysCleaning(response.data.results);
               let uniqueModels = getUniqueKeys(cleanData);
-              this.setState({ lsds5Data: cleanData, uniqueModels: uniqueModels, loading5: false, granularity: searchQuery.granularity});
+              this.setState({ lsdsTopStolenModelsData: cleanData, uniqueModels: uniqueModels, lsdsTopStolenModelsLoading: false, granularity: searchQuery.granularity});
           })
           .catch(error => {
               errors(this, error);
@@ -378,7 +378,7 @@ showHideFilters = () =>
   }
 
   render() {
-    const {apiFetched, lsds1Data, lsds2Data, lsds3Data, lsds4Data, lsds5Data, loading1, loading2, loading3, loading4, loading5, uniqueBrands, uniqueModels, uniqueStatus, uniqueIncidents, granularity, stolen, lost, pending, blocked, recovered, totalReportedDevices, deletedObj} = this.state;
+    const {apiFetched, lsdsTotalReportedDevicesData, lsdsIncidentTypeData, lsdsCaseStatusData, lsdsTopStolenBrandsData, lsdsTopStolenModelsData, lsdsTotalReportedDevicesLoading, lsdsIncidentTypeLoading, lsdsCaseStatusLoading, lsdsTopStolenBrandsLoading, lsdsTopStolenModelsLoading, uniqueBrands, uniqueModels, uniqueStatus, uniqueIncidents, granularity, stolen, lost, pending, blocked, recovered, totalReportedDevices, deletedObj} = this.state;
     return (
       <Container fluid>
         <div className="search-box animated fadeIn">
@@ -472,20 +472,20 @@ showHideFilters = () =>
                     rowHeight={this.state.rowHeight}
                     onWidthChange={this.onWidthChangeMethod}
                   > 
-                    <div name='chartA' key="a" className={deletedObj.aChart === true && 'hidden'}>
-                      <Linechart cardClass="card-warning" title="Number of Reported Devices" loading={loading1} data={lsds1Data} xAxis="x_axis" yAxisLabel="Total number of devices" yAxes={["unique_devices"]}  colorArray={this.getColorArray(32)} granularity={granularity} info={noOfReportedDevices} showLegend="false" heightProp={this.getElementHeight(document.getElementsByName('chartA')[0])} removeChart={this.onRemoveItem} chartGridId={'a'}/>
+                    <div name='lsdsTotalReportedDevicesKey' key="lsdsTotalReportedDevicesKey" className={deletedObj.lsdsTotalReportedDevicesKey === true && 'hidden'}>
+                      <Linechart cardClass="card-warning" title="Number of Reported Devices" loading={lsdsTotalReportedDevicesLoading} data={lsdsTotalReportedDevicesData} xAxis="x_axis" yAxisLabel="Total number of devices" yAxes={["unique_devices"]}  colorArray={this.getColorArray(32)} granularity={granularity} info={noOfReportedDevices} showLegend="false" heightProp={this.getElementHeight(document.getElementsByName('lsdsTotalReportedDevicesKey')[0])} removeChart={this.onRemoveItem} chartGridId={'lsdsTotalReportedDevicesKey'}/>
                     </div>
-                    <div name='chartB' key="b" className={deletedObj.bChart === true && 'hidden'}>
-                      <Barchart cardClass="card-info" title="Status of Reported Devices" heightProp={this.getElementHeight(document.getElementsByName('chartB')[0])} loading={loading3} data={lsds3Data} xAxis="x_axis" yAxisLabel="Number of devices reported by users" yAxes={uniqueStatus} yAxesComposite={["Pending","Blocked", "Recovered"]} colorArray={stackBar20.slice(4)} granularity={granularity}  info={statusOfReportedDevices} removeChart={this.onRemoveItem} chartGridId={'b'}/>
+                    <div name='lsdsCaseStatusKey' key="lsdsCaseStatusKey" className={deletedObj.lsdsCaseStatusKey === true && 'hidden'}>
+                      <Barchart cardClass="card-info" title="Status of Reported Devices" heightProp={this.getElementHeight(document.getElementsByName('lsdsCaseStatusKey')[0])} loading={lsdsCaseStatusLoading} data={lsdsCaseStatusData} xAxis="x_axis" yAxisLabel="Number of devices reported by users" yAxes={uniqueStatus} yAxesComposite={["Pending","Blocked", "Recovered"]} colorArray={stackBarTwentyColors.slice(4)} granularity={granularity}  info={statusOfReportedDevices} removeChart={this.onRemoveItem} chartGridId={'lsdsCaseStatusKey'}/>
                     </div>
-                    <div name='chartC' key="c" className={deletedObj.cChart === true && 'hidden'}>
-                      <Barchart cardClass="card-danger" title="Top Stolen Brands" heightProp={this.getElementHeight(document.getElementsByName('chartC')[0])} loading={loading4} data={lsds4Data} yAxisLabel="Total number of devices reported" yAxes={uniqueBrands} xAxis="x_axis"  colorArray={multiColorStack} granularity={granularity}  info={noOfTopStolenBrands} removeChart={this.onRemoveItem} chartGridId={'c'}/>
+                    <div name='lsdsTopStolenBrandsKey' key="lsdsTopStolenBrandsKey" className={deletedObj.lsdsTopStolenBrandsKey === true && 'hidden'}>
+                      <Barchart cardClass="card-danger" title="Top Stolen Brands" heightProp={this.getElementHeight(document.getElementsByName('lsdsTopStolenBrandsKey')[0])} loading={lsdsTopStolenBrandsLoading} data={lsdsTopStolenBrandsData} yAxisLabel="Total number of devices reported" yAxes={uniqueBrands} xAxis="x_axis"  colorArray={multiColorStack} granularity={granularity}  info={noOfTopStolenBrands} removeChart={this.onRemoveItem} chartGridId={'lsdsTopStolenBrandsKey'}/>
                     </div>    
-                    <div name='chartD' key="d" className={deletedObj.dChart === true && 'hidden'}>
-                      <Barchart cardClass="card-primary" title="Top Models by Reported Devices" heightProp={this.getElementHeight(document.getElementsByName('chartD')[0])} loading={loading5} data={lsds5Data} yAxisLabel="Number of devices reported by users" yAxes={uniqueModels} xAxis="x_axis" colorArray={multiColorStack} granularity={granularity}  info={topModelsbyReportedDevices} removeChart={this.onRemoveItem} chartGridId={'d'}/>
+                    <div name='lsdsTopStolenModelsKey' key="lsdsTopStolenModelsKey" className={deletedObj.lsdsTopStolenModelsKey === true && 'hidden'}>
+                      <Barchart cardClass="card-primary" title="Top Models by Reported Devices" heightProp={this.getElementHeight(document.getElementsByName('lsdsTopStolenModelsKey')[0])} loading={lsdsTopStolenModelsLoading} data={lsdsTopStolenModelsData} yAxisLabel="Number of devices reported by users" yAxes={uniqueModels} xAxis="x_axis" colorArray={multiColorStack} granularity={granularity}  info={topModelsbyReportedDevices} removeChart={this.onRemoveItem} chartGridId={'lsdsTopStolenModelsKey'}/>
                     </div> 
-                    <div name='chartE' key="e" className={deletedObj.eChart === true && 'hidden'}>
-                        <Areachart cardClass="card-warning" title="Incident Nature of Reported Devices" heightProp={this.getElementHeight(document.getElementsByName('chartE')[0])} loading={loading2} data={lsds2Data} yAxisLabel="Total number of devices reported by users" xAxis="x_axis" yAxes={uniqueIncidents} colorArray={BoxesColors.slice(4)} granularity={granularity}  removeChart={this.onRemoveItem} chartGridId={'e'} info={noOfLostStolenDevices}/>
+                    <div name='lsdsIncidentTypeKey' key="lsdsIncidentTypeKey" className={deletedObj.lsdsIncidentTypeKey === true && 'hidden'}>
+                        <Areachart cardClass="card-warning" title="Incident Nature of Reported Devices" heightProp={this.getElementHeight(document.getElementsByName('lsdsIncidentTypeKey')[0])} loading={lsdsIncidentTypeLoading} data={lsdsIncidentTypeData} yAxisLabel="Total number of devices reported by users" xAxis="x_axis" yAxes={uniqueIncidents} colorArray={BoxesColors.slice(4)} granularity={granularity}  removeChart={this.onRemoveItem} chartGridId={'lsdsIncidentTypeKey'} info={noOfLostStolenDevices}/>
                     </div>
                   </ResponsiveReactGridLayout>
                 </div>
@@ -504,11 +504,11 @@ Trends.defaultProps = {
   cols: { lg: 100, md: 100, sm: 6, xs: 4, xxs: 2 },
   breakpoints: {lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0},
   initialLayout: [
-    {i: 'a', x: 0, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
-    {i: 'b', x: 0, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
-    {i: 'c', x: 0, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
-    {i: 'd', x: 50, y: 0, w: 50, h: (50/100*56.6) , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
-    {i: 'e', x: 50, y: 0, w: 50, h: (50/100*56.6) , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) }
+    {i: 'lsdsTotalReportedDevicesKey', x: 0, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'lsdsCaseStatusKey', x: 0, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'lsdsTopStolenBrandsKey', x: 0, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'lsdsTopStolenModelsKey', x: 50, y: 0, w: 50, h: (50/100*56.6) , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'lsdsIncidentTypeKey', x: 50, y: 0, w: 50, h: (50/100*56.6) , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) }
   ]
 };
 

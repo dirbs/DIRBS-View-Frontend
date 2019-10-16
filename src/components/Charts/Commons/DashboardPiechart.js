@@ -79,7 +79,7 @@ class Piechart extends PureComponent {
               const { value, color } = entry
               return (
                 <li className="legend-item">
-                  <Surface width={10} height={10} viewBox="0 0 10 10">
+                  <Surface width={10} height={10} viewbox="0 0 10 10">
                     <Symbols cx={6} cy={6} type="rect" size={50} fill={color} />
                   </Surface>
                   <span>{value}</span>

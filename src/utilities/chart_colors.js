@@ -28,124 +28,94 @@ export const individualBarColors = [
     "#0BDDDE", "#0093C7"
 ]
 
-export const stackBarColors1 = [
+export const stackBarBlueShades = [
     "#0477BF", "#048ABF", "#0DB3D9", "#84C9D9", "#F2F2F2"
 ]
 
-export const stackBarColors2 = [
+export const stackBarAnalogic = [
     "#FFFFFF", "#049DBF", "#0BDDDE", "#0DD9C4", "#0093C7"
 ]
 
-export const stackBarColors3 = [
+export const stackBarPurpleColors = [
     "#A28BD3", "#D897D7", "#99DAB0", "#E9C69E", "#A9B7E8"
 ]
 
-export const stackBarColors4 = [
+export const stackBarReverswPurple = [
     "#C9D893", "#9A8ED6", "#92D8BE", "#D78FA7", "#BC8ED7"
 ]
 
-export const stackBarColors5 = [
+export const stackBarMono = [
     "#F24464", "#7162D9", "#0597F2", "#04D98B", "#F2911B"
 ]
 
-export const stackBarColors6 = [
+export const stackBarLightTraide = [
     "#3C89D9", "#92D7C3", "#FDD969","#7BBEF5", "#EF8026"
 ]
 
-export const stackBarColors7 = [
+export const stackBarYellowTraide = [
     "#F7DD70", "#32C5BB", "#D0EEF9", "#FF9561", "#85D6E9"
 ]
 
-export const stackBarColors8 = [
+export const stackBarTetrade = [
     "#A4E8DF", "#1CC8DC", "#6F83C8"
 ]
 
-export const stackBarColors9 = [
+export const stackBarGrayToGreen = [
     "#E2F2B3", "#D1E697", "#C2DB7F", "#A5E8E1", "#ABBC78"
 ]
 
-export const stackBarColors10 = [
+export const stackBarLightBlueToDark = [
     "#77BDFC", "#2777B4", "#60A4E3", "#ACEBFD", "#468EC9"
 ]
 
-export const SingleBarColors1 = [
+export const stackBarBlueToGray = [
     "#49C2F2", "#49D3F2", "#F2C641", "#F2D680", "#F2F2F2"
 ]
 
-export const SingleBarColors2 = [
+export const stackBarBlueToGraySecond = [
     "#91CDF2", "#49C2F2", "#49D3F2", "#79E6F2", "#F2F2F2"
 ]
 
-export const SingleBarColors3 = [
-    "#66BCF2", "#8DCBF2", "#78BFB2", "#44A68A", "#F2F2F2"
-]
-
-export const SingleBarColors4 = [
-    "#66BCF2", "#8DCBF2", "#78BFB2", "#44A68A", "#F2F2F2"
-]
-
-export const SingleBarColors5 = [
-    "#45B7E0", "#0476D0", "#2CEEF0", "#B4F5F0", "#059DC0", "#04D4F0"
-]
-export const StackColors15 = [
+export const StackColorsCombination = [
     "#45B7E0", "#0476D0", "#2CEEF0", "#B4F5F0", "#059DC0", "#04D4F0",
     "#1CA6A0", "#09C1D0", "#56C0F0", "#1DB3C0", "#31CCE0", "#4DDDE0",
     "#D5D5C0", "#426250", "#39D3E0", "#98E8E0", "#CAEEE0", "#07DAC0"
 ]
 
-export const SingleBarColors6 = [
-    "#1A5F20", "#378E3D", "#81C884", "#A5D6A7",	"#4CB050"
-]
-
-export const SingleBarColors7 = [
+export const StackColorsSkin = [
     "#A7D477", "#FF9E02", "#EED466", "#A84D04", "#F3C381"
 ]
 
-export const SingleBarColors8 = [
-    "#52B5F2", "#66BCF2", "#91CDF2", "#C4E1F2", "#F2F2F2"
-]
-
-export const SingleBarColors9 = [
-    "#90CAF8", "#1F87E6", "#42A5F6", "#65B4F6", "#1665C1"
-]
-
-export const SingleBarColors10 = [
+export const StackColorsRedToGreen = [
     "#FFCCD1",  "#B4D97E", "#A7D477",
 ]
 
-export const SingleBarColors12 = [
-    "#F29D7E", "#F29580", "#F2CBC2", "#F2A0A0", "#F2F2F2"
-]
-
-export const SingleBarColors13 = [
-    "#1EC6D9", "#1ED9D9", "#4AD9BF", "#F2E6C2", "#F2F2F2"
-]
 export const NumerousColors = [
     "#F24464", "#7162D9", "#0597F2", "#04D98B", "#F2911B",
     "#FFCCD1", "#66BCF2", "#B4D97E", "#A7D477", "#65B4F6"
 
 ]
 
-export const NumerousColors2 = [
+export const NumerousColorsSecond = [
     "#F24464", "#7162D9", "#0597F2", "#04D98B", "#F2911B",
     "#FFCCD1", "#66BCF2", "#B4D97E", "#A7D477", "#65B4F6"
 
 ]
 
-export const stackBar20 = [
+export const stackBarTwentyColors = [
     "#15223F","#1E3953","#275067", "#31677A","#3A7E8E",
     "#4395A2","#4CACB6","#56C3C9","#5FDADD","#68F1F1",
     "#3C7F64","#438C6F","#4B9A79","#52A784","#5AB48F",
     "#61C299","#69CFA4","#70DCAF","#78EAB9","#7FF7C4"
 ]
 
-export const stackBar10 = [
+export const stackBarTenColors = [
     "#067302","#187E0C","#2A8A16","#3B9520",
     "#4DA02A","#5FAC33","#71B73D","#82C247",
     "#94CE51","#A6D95B"
 ]
 
-export const stackBar5 = [
+export const stackBarFiveColors = [
     "#4d382a", "#6f523a", "#967559", "#bf9776","#eacfaf"
 ]
 
@@ -259,7 +229,7 @@ export const progressBarColors = [
 
 export const statusColors = [ "#0093C7", "#0BD49C" ,"#ED6364"]
 
-export const statusColorsForBlueBG = [  "#D6D6D6" ,"#ED6364",  "#ffff87"]
+export const statusColorsForBlueBG = [  "#0093C7" ,"#ED6364",  "#ffff87"]
 
 export const pairStatusColors = [
     "#0093C7", "#0BD49C", "#ED6364", "#FEAC55"

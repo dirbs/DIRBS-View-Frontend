@@ -34,7 +34,7 @@ import Piechart from '../../components/Charts/Commons/Piechart';
 import Areachart from '../../components/Charts/Commons/AreaChart';
 import SearchFilters from "./../../components/Form/SearchFilters";
 import {SearchInfo} from "./../../components/Help/SearchInfo";
-import { blueColors, stackBar20, stackBarColors8,multiColorStack, multiColors, BoxesColors } from './../../utilities/chart_colors';
+import { blueColors, stackBarTwentyColors, stackBarTetrade,multiColorStack, multiColors, BoxesColors } from './../../utilities/chart_colors';
 import HeaderCards from './../../components/Cards/HeaderCards';
 import { deviceRegistrationStatus, registeredDevicesCount, deviceOS, deviceTechnology, deviceManufacturingLocation, deviceTopImporters, typeOfRegeisteredDevices, topRegisteredBrands, deviceRegistrationMethod, topRegisteredModels, devicesByIMEISlot } from './../../utilities/reportsInfo';
 import svgSymbol from './../../images/svg_symbol.svg';
@@ -48,7 +48,9 @@ class Trends extends PureComponent {
     this.state = {
       active: false,
       fading: false,
-      isShowingFilters: true,      disableSaveButton: true,      uniqueLocation: [],
+      isShowingFilters: true,      
+      disableSaveButton: true,      
+      uniqueLocation: [],
       uniqueSims: [],
       uniqueBrands: [],
       uniqueImie: [],
@@ -60,30 +62,28 @@ class Trends extends PureComponent {
       uniqueInputType: [],
       yAxis:[],
       uniqueStatusCount: [],
-      drs1Data: null,
-      drs2Data: null,
-      drs3Data: null,
-      drs4Data: null,
-      drs5Data: null,
-      drs6Data: null,
-      drs7Data: null,
-      drs8Data: null,
-      drs9Data: null,
-      drs10Data: null,
-      drs11Data: null,
-      drs12Data: null,
-      loading1: false,
-      loading2: false,
-      loading3: false,
-      loading4: false,
-      loading5: false,
-      loading6: false,
-      loading7: false,
-      loading8: false,
-      loading9: false,
-      loading10: false,
-      loading11: false,
-      loading12: false,
+      drsManufacturingData: null,
+      drsNumOfSimsData: null,
+      drsRegisteredApprovedIMEIsData: null,
+      drsTopDeviceImporterData: null,
+      drsInputTypeData: null,
+      drsOSTypeData: null,
+      drsDeviceTypeData: null,
+      drsRatTypeData: null,
+      drsTopBrandsData: null,
+      drsTopModelsData: null,
+      drsCountOfStatusData: null,
+      drsManufacturingLoading: false,
+      drsNumOfSimsLoading: false,
+      drsRegisteredApprovedIMEIsLoading: false,
+      drsTopDeviceImporterLoading: false,
+      drsInputTypeLoading: false,
+      drsOSTypeLoading: false,
+      drsDeviceTypeLoading: false,
+      drsRatTypeLoading: false,
+      drsTopBrandsLoading: false,
+      drsTopModelsLoading: false,
+      drsCountOfStatusLoading: false,
       apiFetched: false,
       searchQuery: {},
       granularity: "",
@@ -100,7 +100,7 @@ class Trends extends PureComponent {
       layouts: { lg: props.initialLayout },
       layout: [],
       rowHeight: window.innerWidth < 1300 ? 3.7 : 10.6,
-      deletedObj: { aChart: false, bChart: false, cChart: false, dChart: false, eChart: false, fChart: false, gChart: false, hChart: false, iChart: false, jChart: false, kChart: false}
+      deletedObj: { drsRegisteredApprovedIMEIsKey: false, drsCountOfStatusKey: false, drsTopBrandsChartKey: false, drsTopModelsKey: false, drsRatTypeKey: false, drsOSTypeKey: false, drsManufacturingKey: false, drsDeviceTypeKey: false, drsTopDeviceImporterKey: false, drsInputTypeKey: false, drsNumOfSimsKey: false}
     }
     this.getGraphDataFromServer = this.getGraphDataFromServer.bind(this);
     this.saveSearchQuery = this.saveSearchQuery.bind(this);
@@ -168,7 +168,7 @@ class Trends extends PureComponent {
   onRemoveItem(i) {
      this.setState({ layouts: { lg: _.reject(this.state.layout, { i: i })} }, () => {
       let { deletedObj } = this.state;
-      deletedObj[i + 'Chart'] = true;
+      deletedObj[i] = true;
       this.setState({ deletedObj: deletedObj });
     })
 
@@ -181,7 +181,7 @@ class Trends extends PureComponent {
         if(response.data.message) {
         } else {
           const retrievedChartConfig = response.data.config;
-          if(retrievedChartConfig !== undefined && retrievedChartConfig !== null)
+                if(retrievedChartConfig !== undefined && retrievedChartConfig !== null)
           {
             if(retrievedChartConfig.length !== 0)
             {
@@ -191,13 +191,13 @@ class Trends extends PureComponent {
               let isDeleted = true;
               retrievedChartConfig.map((ele, k) =>
               {
-                if(key.charAt(0) === retrievedChartConfig[k].i && retrievedChartConfig[k].w !== 1)
+                if(key === retrievedChartConfig[k].i && retrievedChartConfig[k].w !== 1)
                 {
                   isDeleted = false
                 }
                 return null;
               })
-              deletedObj[key.charAt(0) + 'Chart'] = isDeleted;
+              deletedObj[key] = isDeleted;
               return null;
             })
             this.setState({ layouts: { lg: retrievedChartConfig }, deletedObj: deletedObj  });
@@ -244,19 +244,19 @@ class Trends extends PureComponent {
     this.change = setTimeout(() => {
       this.setState({fading: false})
     }, 2000);
-    this.setState({ layouts: { lg: _.reject(this.state.layout, { i: 'd' })} }, () => {
+    this.setState({ layouts: { lg: _.reject(this.state.layout, { i: 'drsTopModelsKey' })} }, () => {
     let { deletedObj } = this.state;
-    deletedObj.aChart = false;
-    deletedObj.bChart = false;
-    deletedObj.cChart = false;
-    deletedObj.dChart = false;
-    deletedObj.eChart = false;
-    deletedObj.fChart = false;
-    deletedObj.gChart = false;
-    deletedObj.hChart = false;
-    deletedObj.iChart = false;
-    deletedObj.jChart = false;
-    deletedObj.kChart = false;
+    deletedObj.drsRegisteredApprovedIMEIsKey = false;
+    deletedObj.drsCountOfStatusKey = false;
+    deletedObj.drsTopBrandsChartKey = false;
+    deletedObj.drsTopModelsKey = false;
+    deletedObj.drsRatTypeKey = false;
+    deletedObj.drsOSTypeKey = false;
+    deletedObj.drsManufacturingKey = false;
+    deletedObj.drsDeviceTypeKey = false;
+    deletedObj.drsTopDeviceImporterKey = false;
+    deletedObj.drsInputTypeKey = false;
+    deletedObj.drsNumOfSimsKey = false;
     this.setState({ deletedObj: deletedObj, layouts: { lg: this.props.initialLayout } });
     })
   }
@@ -315,7 +315,7 @@ showHideFilters = () =>
 } 
 
   saveSearchQuery(values) {
-    this.setState({ searchQuery: values, loading1: true, loading2: true, loading3: true, loading4: true, loading5: true, loading6: true, loading7: true, loading8: true, loading9: true, loading10: true, loading11: true, loading12: true, drs1Data: [], drs2Data: [], drs3Data: [], drs4Data: [], drs5Data: [], drs6Data: [], drs7Data: [], drs8Data: [], drs9Data: [], drs10Data: [], drs11Data: [], drs12Data: [], apiFetched: true} , () => {
+    this.setState({ searchQuery: values, drsManufacturingLoading: true, drsNumOfSimsLoading: true, drsRegisteredApprovedIMEIsLoading: true, drsTopDeviceImporterLoading: true, drsInputTypeLoading: true, drsOSTypeLoading: true, drsDeviceTypeLoading: true, drsRatTypeLoading: true, drsTopBrandsLoading: true, drsTopModelsLoading: true, drsCountOfStatusLoading: true, drsManufacturingData: [], drsNumOfSimsData: [], drsRegisteredApprovedIMEIsData: [], drsTopDeviceImporterData: [], drsInputTypeData: [], drsOSTypeData: [], drsDeviceTypeData: [], drsRatTypeData: [], drsTopBrandsData: [], drsTopModelsData: [], drsCountOfStatusData: [], apiFetched: true} , () => {
       this.updateTokenHOC(this.getGraphDataFromServer);
 	  })
   }
@@ -356,11 +356,11 @@ showHideFilters = () =>
       instance.post('/drs-reg-01-manufacturing_location', postData, config)
           .then(response => {
               if(response.data.message) {
-                this.setState({ loading1: false });
+                this.setState({ drsManufacturingLoading: false });
               } else {
                 let cleanData = yAxisKeysCleaning(response.data.results)
                 let uniqueLocation = getUniqueKeys(cleanData);
-                this.setState({ drs1Data: cleanData, uniqueLocation: uniqueLocation, loading1: false, granularity: searchQuery.granularity});
+                this.setState({ drsManufacturingData: cleanData, uniqueLocation: uniqueLocation, drsManufacturingLoading: false, granularity: searchQuery.granularity});
               }
           })
           .catch(error => {
@@ -371,7 +371,7 @@ showHideFilters = () =>
           .then(response => {
             let cleanData = yAxisKeysCleaning(response.data.results)
             let uniqueSims = getUniqueKeys(cleanData);
-            this.setState({ drs2Data: cleanData, uniqueSims: uniqueSims, loading2: false, granularity: searchQuery.granularity});
+            this.setState({ drsNumOfSimsData: cleanData, uniqueSims: uniqueSims, drsNumOfSimsLoading: false, granularity: searchQuery.granularity});
           })
           .catch(error => {
               errors(this, error);
@@ -382,7 +382,7 @@ showHideFilters = () =>
           .then(response => {
             let cleanData = yAxisToCount(response.data.results)
             let uniqueImie = getUniqueKeys(cleanData);
-            this.setState({ drs3Data: cleanData, uniqueImie: uniqueImie, loading3: false, granularity: searchQuery.granularity});
+            this.setState({ drsRegisteredApprovedIMEIsData: cleanData, uniqueImie: uniqueImie, drsRegisteredApprovedIMEIsLoading: false, granularity: searchQuery.granularity});
           })
           .catch(error => {
               errors(this, error);
@@ -392,7 +392,7 @@ showHideFilters = () =>
           .then(response => {
             let cleanData = yAxisKeysCleaning(response.data.results)
             let uniqueStatusCount = getUniqueKeys(cleanData);
-            this.setState({ drs12Data: cleanData, uniqueStatusCount: uniqueStatusCount, loading12: false, granularity: searchQuery.granularity});
+            this.setState({ drsCountOfStatusData: cleanData, uniqueStatusCount: uniqueStatusCount, drsCountOfStatusLoading: false, granularity: searchQuery.granularity});
           })
           .catch(error => {
               errors(this, error);
@@ -400,7 +400,7 @@ showHideFilters = () =>
 
       instance.post('/drs-reg-05-top-device-importers', postData, config)
           .then(response => {
-                this.setState({ drs4Data: response.data.top_importers, loading4: false, granularity: searchQuery.granularity});
+                this.setState({ drsTopDeviceImporterData: response.data.top_importers, drsTopDeviceImporterLoading: false, granularity: searchQuery.granularity});
           })
           .catch(error => {
               errors(this, error);
@@ -410,7 +410,7 @@ showHideFilters = () =>
           .then(response => {
             let cleanData = yAxisKeysCleaning(response.data.results)
             let uniqueInputType = getUniqueKeys(cleanData);
-            this.setState({ drs6Data: cleanData,uniqueInputType: uniqueInputType, loading6: false, granularity: searchQuery.granularity});
+            this.setState({ drsInputTypeData: cleanData,uniqueInputType: uniqueInputType, drsInputTypeLoading: false, granularity: searchQuery.granularity});
           })
           .catch(error => {
               errors(this, error);
@@ -419,7 +419,7 @@ showHideFilters = () =>
           .then(response => {
                 let cleanData = yAxisKeysCleaning(response.data.results)
                 let uniqueTests = getUniqueKeys(cleanData);
-                this.setState({ drs7Data: cleanData, uniqueTests: uniqueTests, loading7: false, granularity: searchQuery.granularity});
+                this.setState({ drsOSTypeData: cleanData, uniqueTests: uniqueTests, drsOSTypeLoading: false, granularity: searchQuery.granularity});
           })
           .catch(error => {
               errors(this, error);
@@ -428,7 +428,7 @@ showHideFilters = () =>
           .then(response => {
                 let cleanData = yAxisKeysCleaning(response.data.results)
                 let uniqueType = getUniqueKeys(cleanData);
-                this.setState({ drs8Data: cleanData, uniqueType: uniqueType, loading8: false, granularity: searchQuery.granularity});
+                this.setState({ drsDeviceTypeData: cleanData, uniqueType: uniqueType, drsDeviceTypeLoading: false, granularity: searchQuery.granularity});
           })
           .catch(error => {
               errors(this, error);
@@ -437,7 +437,7 @@ showHideFilters = () =>
           .then(response => {
                 let cleanData = yAxisKeysCleaning(response.data.results)
                 let uniqueTech = getUniqueKeys(cleanData);
-                this.setState({ drs9Data: cleanData, uniqueTech: uniqueTech, loading9: false, granularity: searchQuery.granularity});
+                this.setState({ drsRatTypeData: cleanData, uniqueTech: uniqueTech, drsRatTypeLoading: false, granularity: searchQuery.granularity});
           })
           .catch(error => {
               errors(this, error);
@@ -446,7 +446,7 @@ showHideFilters = () =>
           .then(response => {
                 let cleanData = yAxisKeysCleaning(response.data.results)
                 let uniqueBrands = getUniqueKeys(cleanData);
-                this.setState({ drs10Data: cleanData, uniqueBrands: uniqueBrands, loading10: false, granularity: searchQuery.granularity});
+                this.setState({ drsTopBrandsData: cleanData, uniqueBrands: uniqueBrands, drsTopBrandsLoading: false, granularity: searchQuery.granularity});
           })
           .catch(error => {
               errors(this, error);
@@ -455,14 +455,14 @@ showHideFilters = () =>
           .then(response => {
                 let cleanData = yAxisKeysCleaning(response.data.results)
                 let uniqueModels = getUniqueKeys(cleanData);
-                this.setState({ drs11Data: cleanData, uniqueModels: uniqueModels, loading11: false, granularity: searchQuery.granularity});
+                this.setState({ drsTopModelsData: cleanData, uniqueModels: uniqueModels, drsTopModelsLoading: false, granularity: searchQuery.granularity});
           })
           .catch(error => {
               errors(this, error);
           })    
   }
   render() {
-    const {apiFetched, drs1Data, drs2Data, drs3Data, drs4Data, drs6Data, drs7Data, drs8Data, drs9Data, drs10Data, drs11Data, drs12Data, loading1, loading2, loading3, loading4, loading6, loading7, loading8, loading9, loading10, loading11, loading12, uniqueTests, uniqueType, uniqueTech, uniqueBrands, uniqueModels, uniqueLocation, uniqueSims, uniqueImie, uniqueInputType, uniqueStatusCount, granularity, approved, rejected,inReview, totalRegDev, smartphone, featPhone, deletedObj } = this.state;
+    const {apiFetched, drsManufacturingData, drsNumOfSimsData, drsRegisteredApprovedIMEIsData, drsTopDeviceImporterData, drsInputTypeData, drsOSTypeData, drsDeviceTypeData, drsRatTypeData, drsTopBrandsData, drsTopModelsData, drsCountOfStatusData, drsManufacturingLoading, drsNumOfSimsLoading, drsRegisteredApprovedIMEIsLoading, drsTopDeviceImporterLoading, drsInputTypeLoading, drsOSTypeLoading, drsDeviceTypeLoading, drsRatTypeLoading, drsTopBrandsLoading, drsTopModelsLoading, drsCountOfStatusLoading, uniqueTests, uniqueType, uniqueTech, uniqueBrands, uniqueModels, uniqueLocation, uniqueSims, uniqueImie, uniqueInputType, uniqueStatusCount, granularity, approved, rejected,inReview, totalRegDev, smartphone, featPhone, deletedObj } = this.state;
     return (
       <Container fluid>
         <div className="search-box animated fadeIn">
@@ -555,38 +555,38 @@ showHideFilters = () =>
                     rowHeight={this.state.rowHeight}
                     onWidthChange={this.onWidthChangeMethod}
                   > 
-                    <div name='chartA' key="a" className={deletedObj.aChart === true && 'hidden'}>
-                    <Barchart cardClass="card-success" title="Registered IMEIs Count" loading={loading3} data={drs3Data} xAxis="x_axis" yAxisLabel="Number of IMEIs" yAxes={uniqueImie} customName="Count" colorArray={blueColors.slice(2)} granularity={granularity} info={registeredDevicesCount} showLegend="false" heightProp={this.getElementHeight(document.getElementsByName('chartA')[0])} removeChart={this.onRemoveItem} chartGridId={'a'}/>
+                    <div name='drsRegisteredApprovedIMEIsKey' key="drsRegisteredApprovedIMEIsKey" className={deletedObj.drsRegisteredApprovedIMEIsKey === true && 'hidden'}>
+                    <Barchart cardClass="card-success" title="Registered IMEIs Count" loading={drsRegisteredApprovedIMEIsLoading} data={drsRegisteredApprovedIMEIsData} xAxis="x_axis" yAxisLabel="Number of IMEIs" yAxes={uniqueImie} customName="Count" colorArray={blueColors.slice(2)} granularity={granularity} info={registeredDevicesCount} showLegend="false" heightProp={this.getElementHeight(document.getElementsByName('drsRegisteredApprovedIMEIsKey')[0])} removeChart={this.onRemoveItem} chartGridId={'drsRegisteredApprovedIMEIsKey'}/>
                     </div>
-                    <div name='chartB' key="b" className={deletedObj.bChart === true && 'hidden'}>
-                    <Barchart cardClass="card-primary" title="IMEIs Registration Status" loading={loading12} data={drs12Data} xAxis="x_axis" yAxisLabel="Represents number of IMEIs" yAxes={uniqueStatusCount} colorArray={stackBar20.slice(3)} granularity={granularity} info={ deviceRegistrationStatus }  heightProp={this.getElementHeight(document.getElementsByName('chartB')[0])} removeChart={this.onRemoveItem} chartGridId={'b'}/>
+                    <div name='drsCountOfStatusKey' key="drsCountOfStatusKey" className={deletedObj.drsCountOfStatusKey === true && 'hidden'}>
+                    <Barchart cardClass="card-primary" title="IMEIs Registration Status" loading={drsCountOfStatusLoading} data={drsCountOfStatusData} xAxis="x_axis" yAxisLabel="Represents number of IMEIs" yAxes={uniqueStatusCount} colorArray={stackBarTwentyColors.slice(3)} granularity={granularity} info={ deviceRegistrationStatus }  heightProp={this.getElementHeight(document.getElementsByName('drsCountOfStatusKey')[0])} removeChart={this.onRemoveItem} chartGridId={'drsCountOfStatusKey'}/>
                     </div>
-                    <div name='chartC' key="c" className={deletedObj.cChart === true && 'hidden'}>
-                    <Barchart cardClass="card-primary" title="Top Registered Brands" loading={loading10} data={drs10Data} xAxis="x_axis" yAxisLabel="Number of Devices" yAxes={uniqueBrands} colorArray={stackBar20} granularity={granularity} info={topRegisteredBrands }  heightProp={this.getElementHeight(document.getElementsByName('chartC')[0])} removeChart={this.onRemoveItem} chartGridId={'c'}/>
+                    <div name='drsTopBrandsChartKey' key="drsTopBrandsChartKey" className={deletedObj.drsTopBrandsChartKey === true && 'hidden'}>
+                    <Barchart cardClass="card-primary" title="Top Registered Brands" loading={drsTopBrandsLoading} data={drsTopBrandsData} xAxis="x_axis" yAxisLabel="Number of Devices" yAxes={uniqueBrands} colorArray={stackBarTwentyColors} granularity={granularity} info={topRegisteredBrands }  heightProp={this.getElementHeight(document.getElementsByName('drsTopBrandsChartKey')[0])} removeChart={this.onRemoveItem} chartGridId={'drsTopBrandsChartKey'}/>
                     </div>    
-                    <div name='chartD' key="d" className={deletedObj.dChart === true && 'hidden'}>
-                    <Barchart cardClass="card-success" title="Top Registered Models" loading={loading11} data={drs11Data} xAxis="x_axis" yAxisLabel="Number of Devices" yAxes={uniqueModels} colorArray={multiColorStack} granularity={granularity} info={topRegisteredModels}  heightProp={this.getElementHeight(document.getElementsByName('chartD')[0])} removeChart={this.onRemoveItem} chartGridId={'d'}/>
+                    <div name='drsTopModelsKey' key="drsTopModelsKey" className={deletedObj.drsTopModelsKey === true && 'hidden'}>
+                    <Barchart cardClass="card-success" title="Top Registered Models" loading={drsTopModelsLoading} data={drsTopModelsData} xAxis="x_axis" yAxisLabel="Number of Devices" yAxes={uniqueModels} colorArray={multiColorStack} granularity={granularity} info={topRegisteredModels}  heightProp={this.getElementHeight(document.getElementsByName('drsTopModelsKey')[0])} removeChart={this.onRemoveItem} chartGridId={'drsTopModelsKey'}/>
                     </div> 
-                    <div name='chartE' key="e" className={deletedObj.eChart === true && 'hidden'}>
-                    <Barchart cardClass="card-info" title="Device Technologies" loading={loading9} data={drs9Data} xAxis="x_axis" yAxisLabel="Number of Devices" yAxes={uniqueTech} colorArray={multiColorStack} granularity={granularity} info={deviceTechnology}  heightProp={this.getElementHeight(document.getElementsByName('chartE')[0])} removeChart={this.onRemoveItem} chartGridId={'e'}/>
+                    <div name='drsRatTypeKey' key="drsRatTypeKey" className={deletedObj.drsRatTypeKey === true && 'hidden'}>
+                    <Barchart cardClass="card-info" title="Device Technologies" loading={drsRatTypeLoading} data={drsRatTypeData} xAxis="x_axis" yAxisLabel="Number of Devices" yAxes={uniqueTech} colorArray={multiColorStack} granularity={granularity} info={deviceTechnology}  heightProp={this.getElementHeight(document.getElementsByName('drsRatTypeKey')[0])} removeChart={this.onRemoveItem} chartGridId={'drsRatTypeKey'}/>
                     </div>
-                    <div name='chartF' key="f" className={deletedObj.fChart === true && 'hidden'}>
-                    <Barchart cardClass="card-warning" title="Devices Operating System" loading={loading7} data={drs7Data} xAxis="x_axis" yAxisLabel="Number of Devices" yAxes={uniqueTests} colorArray={stackBar20.slice(3)} granularity={granularity} info={deviceOS}  heightProp={this.getElementHeight(document.getElementsByName('chartF')[0])} removeChart={this.onRemoveItem} chartGridId={'f'}/>
+                    <div name='drsOSTypeKey' key="drsOSTypeKey" className={deletedObj.drsOSTypeKey === true && 'hidden'}>
+                    <Barchart cardClass="card-warning" title="Devices Operating System" loading={drsOSTypeLoading} data={drsOSTypeData} xAxis="x_axis" yAxisLabel="Number of Devices" yAxes={uniqueTests} colorArray={stackBarTwentyColors.slice(3)} granularity={granularity} info={deviceOS}  heightProp={this.getElementHeight(document.getElementsByName('drsOSTypeKey')[0])} removeChart={this.onRemoveItem} chartGridId={'drsOSTypeKey'}/>
                     </div>
-                    <div name='chartG' key="g" className={deletedObj.gChart === true && 'hidden'}>
-                     <Areachart cardClass="card-info" title="Devices Manufacturing Location" loading={loading1} data={drs1Data} xAxis="x_axis" yAxisLabel="Number of Devices" yAxes={uniqueLocation} colorArray={stackBarColors8} granularity={granularity} info={deviceManufacturingLocation}  heightProp={this.getElementHeight(document.getElementsByName('chartG')[0])} removeChart={this.onRemoveItem} chartGridId={'g'}/>
+                    <div name='drsManufacturingKey' key="drsManufacturingKey" className={deletedObj.drsManufacturingKey === true && 'hidden'}>
+                     <Areachart cardClass="card-info" title="Devices Manufacturing Location" loading={drsManufacturingLoading} data={drsManufacturingData} xAxis="x_axis" yAxisLabel="Number of Devices" yAxes={uniqueLocation} colorArray={stackBarTetrade} granularity={granularity} info={deviceManufacturingLocation}  heightProp={this.getElementHeight(document.getElementsByName('drsManufacturingKey')[0])} removeChart={this.onRemoveItem} chartGridId={'drsManufacturingKey'}/>
                     </div>
-                    <div name='chartH' key="h" className={deletedObj.hChart === true && 'hidden'}>
-                    <Barchart cardClass="card-primary" title="Types of Registered Devices" loading={loading8} data={drs8Data} xAxis="x_axis" yAxisLabel="Number of Devices" yAxes={uniqueType} colorArray={multiColors} granularity={granularity} info={typeOfRegeisteredDevices }  heightProp={this.getElementHeight(document.getElementsByName('chartH')[0])} removeChart={this.onRemoveItem} chartGridId={'h'}/>
+                    <div name='drsDeviceTypeKey' key="drsDeviceTypeKey" className={deletedObj.drsDeviceTypeKey === true && 'hidden'}>
+                    <Barchart cardClass="card-primary" title="Types of Registered Devices" loading={drsDeviceTypeLoading} data={drsDeviceTypeData} xAxis="x_axis" yAxisLabel="Number of Devices" yAxes={uniqueType} colorArray={multiColors} granularity={granularity} info={typeOfRegeisteredDevices }  heightProp={this.getElementHeight(document.getElementsByName('drsDeviceTypeKey')[0])} removeChart={this.onRemoveItem} chartGridId={'drsDeviceTypeKey'}/>
                     </div>
-                    <div name='chartI' key="i" className={deletedObj.iChart === true && 'hidden'}>
-                    <Piechart cardClass="card-warning" title="Device Top Importers" loading={loading4} data={drs4Data} value="value" colorArray={multiColorStack} granularity={granularity} innerRadiusProp={70} paddingProp={2} info={deviceTopImporters}  heightProp={this.getElementHeight(document.getElementsByName('chartI')[0])} removeChart={this.onRemoveItem} chartGridId={'i'}/>
+                    <div name='drsTopDeviceImporterKey' key="drsTopDeviceImporterKey" className={deletedObj.drsTopDeviceImporterKey === true && 'hidden'}>
+                    <Piechart cardClass="card-warning" title="Device Top Importers" loading={drsTopDeviceImporterLoading} data={drsTopDeviceImporterData} value="value" colorArray={multiColorStack} granularity={granularity} innerRadiusProp={70} paddingProp={2} info={deviceTopImporters}  heightProp={this.getElementHeight(document.getElementsByName('drsTopDeviceImporterKey')[0])} removeChart={this.onRemoveItem} chartGridId={'drsTopDeviceImporterKey'}/>
                     </div>
-                    <div name='chartJ' key="j" className={deletedObj.jChart === true && 'hidden'}>
-                    <Areachart cardClass="card-success" title="Device Registration Method" loading={loading6} data={drs6Data} xAxis="x_axis" yAxisLabel="Represents number of devices" yAxes={uniqueInputType} colorArray={BoxesColors.slice(3)} granularity={granularity} info={deviceRegistrationMethod}  heightProp={this.getElementHeight(document.getElementsByName('chartJ')[0])} removeChart={this.onRemoveItem} chartGridId={'j'}/>
+                    <div name='drsInputTypeKey' key="drsInputTypeKey" className={deletedObj.drsInputTypeKey === true && 'hidden'}>
+                    <Areachart cardClass="card-success" title="Device Registration Method" loading={drsInputTypeLoading} data={drsInputTypeData} xAxis="x_axis" yAxisLabel="Represents number of devices" yAxes={uniqueInputType} colorArray={BoxesColors.slice(3)} granularity={granularity} info={deviceRegistrationMethod}  heightProp={this.getElementHeight(document.getElementsByName('drsInputTypeKey')[0])} removeChart={this.onRemoveItem} chartGridId={'drsInputTypeKey'}/>
                     </div>
-                    <div name='chartK' key="k" className={deletedObj.kChart === true && 'hidden'}>
-                    <Barchart cardClass="card-info" title="Devices by IMEI Slots" loading={loading2} data={drs2Data} xAxis="x_axis" yAxisLabel="Number of Devices" yAxes={uniqueSims} colorArray={multiColorStack.slice(4)}  granularity={granularity} info={devicesByIMEISlot} heightProp={this.getElementHeight(document.getElementsByName('chartK')[0])} removeChart={this.onRemoveItem} chartGridId={'k'}/>
+                    <div name='drsNumOfSimsKey' key="drsNumOfSimsKey" className={deletedObj.drsNumOfSimsKey === true && 'hidden'}>
+                    <Barchart cardClass="card-info" title="Devices by IMEI Slots" loading={drsNumOfSimsLoading} data={drsNumOfSimsData} xAxis="x_axis" yAxisLabel="Number of Devices" yAxes={uniqueSims} colorArray={multiColorStack.slice(4)}  granularity={granularity} info={devicesByIMEISlot} heightProp={this.getElementHeight(document.getElementsByName('drsNumOfSimsKey')[0])} removeChart={this.onRemoveItem} chartGridId={'drsNumOfSimsKey'}/>
                     </div>
               </ResponsiveReactGridLayout>
               </div>
@@ -605,17 +605,17 @@ Trends.defaultProps = {
   cols: { lg: 100, md: 100, sm: 6, xs: 4, xxs: 2 },
   breakpoints: {lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0},
   initialLayout: [
-    {i: 'a', x: 0, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
-    {i: 'b', x: 50, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
-    {i: 'c', x: 0, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
-    {i: 'd', x: 50, y: 0, w: 50, h: (50/100*56.6) , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
-    {i: 'e', x: 0, y: 0, w: 50, h: (50/100*56.6) , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
-    {i: 'f', x: 50, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
-    {i: 'g', x: 0, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
-    {i: 'h', x: 50, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
-    {i: 'i', x: 0, y: 0, w: 50, h: (50/100*56.6) , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6), isResizable: false },
-    {i: 'j', x: 50, y: 0, w: 50, h: (50/100*56.6) , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
-    {i: 'k', x: 0, y: 0, w: 50, h: (50/100*56.6) , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) }
+    {i: 'drsRegisteredApprovedIMEIsKey', x: 0, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'drsCountOfStatusKey', x: 50, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'drsTopBrandsChartKey', x: 0, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'drsTopModelsKey', x: 50, y: 0, w: 50, h: (50/100*56.6) , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'drsRatTypeKey', x: 0, y: 0, w: 50, h: (50/100*56.6) , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'drsOSTypeKey', x: 50, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'drsManufacturingKey', x: 0, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'drsDeviceTypeKey', x: 50, y: 0, w: 50, h: (50/100*56.6)  , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'drsTopDeviceImporterKey', x: 0, y: 0, w: 50, h: (50/100*56.6) , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6), isResizable: false },
+    {i: 'drsInputTypeKey', x: 50, y: 0, w: 50, h: (50/100*56.6) , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) },
+    {i: 'drsNumOfSimsKey', x: 0, y: 0, w: 50, h: (50/100*56.6) , minW: 33, minH: 20, maxW: 100, maxH: (75/100*56.6) }
   ]
 };
 

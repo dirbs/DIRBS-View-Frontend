@@ -31,7 +31,7 @@ import { getAuthHeader, instance, errors, getUniqueKeys, yAxisFormatter, formate
 import Linechart from './../../components/Charts/Commons/Linechart';
 import DashboardPiechart from './../../components/Charts/Commons/DashboardPiechart';
 import RadialBarchart from './../../components/Charts/Commons/RadialBarChart';
-import { barBgColors, colorIMEIsPairing, progressBarColors, statusColors, pairStatusColors, statusColorsForBlueBG, statusColorArray } from './../../utilities/chart_colors';
+import { barBgColors, colorIMEIsPairing, progressBarColors, statusColorsForBlueBG, statusColorArray } from './../../utilities/chart_colors';
 import HeaderCards from '../../components/Cards/HeaderCards';
 
 class Dashboard extends PureComponent {
@@ -40,43 +40,39 @@ class Dashboard extends PureComponent {
     this.state = {
       operatorsArray: [],
       isShowingFilters: true,
-      totalB7Count: 0,
-      totalB9Count: 0,
-      totalB10Count: 0,
-      totalB16Count: 0,
-      approvedB10Count: 0,
+      TotalOperatorWiseIMEIsCount: 0,  
+      TotalOperatorWiseBlockingCount: 0,
+      TotalIMEIsCount: 0,
+      TotalLostStolenCount: 0,
+      ApprovedIMEIsCount: 0,
       approvedIMEIB10Count: 0,
-      detailsB10: null,
-      uniqueB8: [],
-      uniqueB17: [],
+      detailIMEIs: null,
+      uniqueOperatorWiseTrend: [],
+      uniqueLostStolenDeviceTrend: [],
       uniqueModels: [],
       uniqueIncidents: [],
       uniqueStatus: [],
-      dashBoard1Data: null,
-      dashBoard2Data: null,
-      dashBoard3Data: null,
-      dashBoard4Data: null,
-      dashBoard5Data: null,
-      dashBoard6Data: null,
+      OperatorWiseIMEIsData: null,
+      OperatorWiseTrendData: null,
+      OperatorWiseBlockingData: null,
+      TotalIMEIsData: null,
+      RegisteredDeviceTechnologyData: null,
+      TopRegisteredBrandsData: null,
       dashBoardTotalData: null,
-      dashBoard7Data: null,
-      dashBoard8Data: null,
-      dashBoard9Data: null,
-      dashBoard10Data: null,
-      dashBoard11Data: null,
-      dashBoard12Data: null,
-      loading1: false,
-      loading2: false,
-      loading3: false,
-      loading4: false,
-      loading5: false,
+      PairingTypesData: null,
+      ActivePairsData: null,
+      PairsClassificationData: null,
+      DeviceStatusData: null,
+      DeviceTrendData: null,
+      MostStolenBrandsData: null,
       apiFetched: false,
       totalIMEIs: {},
       compliantIMEIs: {},
       nonCompliantIMEIs: {},
       pairedIMEIs: {},
       reportedDevices: {},
-      registeredIMEIs: {}
+      registeredIMEIs: {},
+      dashboardLastUpdate: null
     }
     this.getDashBoardDataFromServer = this.getDashBoardDataFromServer.bind(this);
     this.updateTokenHOC = this.updateTokenHOC.bind(this);
@@ -146,18 +142,17 @@ class Dashboard extends PureComponent {
       instance.get('/view-dashboard')
           .then(response => {
               if(response.data.message) {
-                // this.setState({ loading1: false });total_MNOs_IMEIs
               } else {
-                let formatedB7 = Object.entries(response.data.B7_operator_wise_imeis).map((e) => ({ [e[0]]: e[1] }));
-                let sortedB7  = formatedB7.sort((a, b) => parseFloat(b[Object.keys(b)[0]]) - parseFloat(a[Object.keys(a)[0]]));
-                let formatedB9 = Object.entries(response.data.B9_operator_wise_blocked_imeis).map((e) => ({ [e[0]]: e[1] }));
-                let sortedB9 =  formatedB9.sort((a, b) => parseFloat(b[Object.keys(b)[0]]) - parseFloat(a[Object.keys(a)[0]]));
-                let formatedB10 = Object.entries(response.data.B10_drs_imeis_trend.drs_imei_status).map((e) => ({ [e[0]]: e[1] }));
-                let sortedB10 =  formatedB10.sort((a, b) => parseFloat(b[Object.keys(b)[0]]) - parseFloat(a[Object.keys(a)[0]]));
-                let formatedB15 = Object.entries(response.data.B15_dps_pairs_classification).map((e) => ({ [e[0]]: e[1] }));
-                let sortedB15 =  formatedB15.sort((a, b) => parseFloat(b[Object.keys(b)[0]]) - parseFloat(a[Object.keys(a)[0]]));
-                let uniqueB8Pairs = getUniqueKeys(response.data.B8_operators_imeis_trend.six_months_trend);
-                let uniqueB17Trend = getUniqueKeys(response.data.B17_lsds_devices_trend.lsds_six_months_trend);
+                let formatedOperatorWiseIMEIs = Object.entries(response.data.B7_operator_wise_imeis).map((e) => ({ [e[0]]: e[1] }));
+                let sortedOperatorWiseIMEIs  = formatedOperatorWiseIMEIs.sort((a, b) => parseFloat(b[Object.keys(b)[0]]) - parseFloat(a[Object.keys(a)[0]]));
+                let formatedOperatorWiseBlocking = Object.entries(response.data.B9_operator_wise_blocked_imeis).map((e) => ({ [e[0]]: e[1] }));
+                let sortedOperatorWiseBlocking =  formatedOperatorWiseBlocking.sort((a, b) => parseFloat(b[Object.keys(b)[0]]) - parseFloat(a[Object.keys(a)[0]]));
+                let formatedTotalIMEIs = Object.entries(response.data.B10_drs_imeis_trend.drs_imei_status).map((e) => ({ [e[0]]: e[1] }));
+                let sortedTotalIMEIs =  formatedTotalIMEIs.sort((a, b) => parseFloat(b[Object.keys(b)[0]]) - parseFloat(a[Object.keys(a)[0]]));
+                let formatedPairsClassification = Object.entries(response.data.B15_dps_pairs_classification).map((e) => ({ [e[0]]: e[1] }));
+                let sortedPairsClassification =  formatedPairsClassification.sort((a, b) => parseFloat(b[Object.keys(b)[0]]) - parseFloat(a[Object.keys(a)[0]]));
+                let uniqueOperatorWiseTrend = getUniqueKeys(response.data.B8_operators_imeis_trend.six_months_trend);
+                let uniqueDeviceTrend = getUniqueKeys(response.data.B17_lsds_devices_trend.lsds_six_months_trend);
                 this.setState({ totalIMEIs: response.data.B1_core_total_imeis,
                   compliantIMEIs: response.data.B2_core_compliant_imeis,
                   nonCompliantIMEIs: response.data.B3_core_non_compliant_imeis,
@@ -165,28 +160,28 @@ class Dashboard extends PureComponent {
                   reportedDevices: response.data.B5_lsds_reported_devices,
                   registeredIMEIs: response.data.B6_drs_registered_imeis,
                   apiFetched: true,
-                  dashBoard1Data: sortedB7.filter(x => !Object.keys(x)[0].includes('total_MNOs_IMEIs')),
-                  totalB7Count: response.data.B7_operator_wise_imeis.total_MNOs_IMEIs,
-                  uniqueB8: uniqueB8Pairs,
-                  dashBoard2Data: response.data.B8_operators_imeis_trend.six_months_trend,
-                  dashBoard3Data: sortedB9.filter(x => !Object.keys(x)[0].includes('total_blocked_IMEIs')),
-                  totalB9Count: response.data.B9_operator_wise_blocked_imeis.total_blocked_IMEIs,
-                  dashBoard4Data: sortedB10.filter(x => !Object.keys(x)[0].includes('statuses_percentage')),
-                  totalB10Count: response.data.B10_drs_imeis_trend.total_drs_imeis,
-                  approvedB10Count: response.data.B10_drs_imeis_trend.drs_approved_devices,
+                  OperatorWiseIMEIsData: sortedOperatorWiseIMEIs.filter(x => !Object.keys(x)[0].includes('total_MNOs_IMEIs')),
+                  TotalOperatorWiseIMEIsCount: response.data.B7_operator_wise_imeis.total_MNOs_IMEIs,
+                  uniqueOperatorWiseTrend: uniqueOperatorWiseTrend,
+                  OperatorWiseTrendData: response.data.B8_operators_imeis_trend.six_months_trend,
+                  OperatorWiseBlockingData: sortedOperatorWiseBlocking.filter(x => !Object.keys(x)[0].includes('total_blocked_IMEIs')),
+                  TotalOperatorWiseBlockingCount: response.data.B9_operator_wise_blocked_imeis.total_blocked_IMEIs,
+                  TotalIMEIsData: sortedTotalIMEIs.filter(x => !Object.keys(x)[0].includes('statuses_percentage')),
+                  TotalIMEIsCount: response.data.B10_drs_imeis_trend.total_drs_imeis,
+                  ApprovedIMEIsCount: response.data.B10_drs_imeis_trend.drs_approved_devices,
                   approvedIMEIB10Count: response.data.B10_drs_imeis_trend.drs_imei_status.Approved,
-                  detailsB10: response.data.B10_drs_imeis_trend.last_3_months_imeis,
-                  dashBoard5Data: response.data.B11_drs_technology_wise_devices.approved_devices,
-                  dashBoard6Data: response.data.B12_drs_top_approved_brands.drs_top_brands,
+                  detailIMEIs: response.data.B10_drs_imeis_trend.last_3_months_imeis,
+                  RegisteredDeviceTechnologyData: response.data.B11_drs_technology_wise_devices.approved_devices,
+                  TopRegisteredBrandsData: response.data.B12_drs_top_approved_brands.drs_top_brands,
                   dashBoardTotalData: response.data.B12_drs_top_approved_brands.total_top_brands,
-                  dashBoard7Data: response.data.B13_dps_pairing_types_count,
-                  dashBoard8Data: response.data.B14_dps_operators_active_pairs,
-                  dashBoard9Data: sortedB15,
-                  dashBoard10Data: response.data.B16_lsds_devices_status.statuses,
-                  totalB16Count: response.data.B16_lsds_devices_status.total_devices,
-                  uniqueB17: uniqueB17Trend,
-                  dashBoard11Data: response.data.B17_lsds_devices_trend.lsds_six_months_trend,
-                  dashBoard12Data: response.data.B18_lsds_top_brands
+                  PairingTypesData: response.data.B13_dps_pairing_types_count,
+                  ActivePairsData: response.data.B14_dps_operators_active_pairs,
+                  PairsClassificationData: sortedPairsClassification,
+                  DeviceStatusData: response.data.B16_lsds_devices_status.statuses,
+                  TotalLostStolenCount: response.data.B16_lsds_devices_status.total_devices,
+                  uniqueLostStolenDeviceTrend: uniqueDeviceTrend,
+                  DeviceTrendData: response.data.B17_lsds_devices_trend.lsds_six_months_trend,
+                  MostStolenBrandsData: response.data.B18_lsds_top_brands
                    });
               }
           })
@@ -195,7 +190,7 @@ class Dashboard extends PureComponent {
           })
   }
 
-  componentWillMount()
+  UNSAFE_componentWillMount()
   {
     instance.get('/mno-names')
     .then(response => {
@@ -205,7 +200,7 @@ class Dashboard extends PureComponent {
   }
 
   render() {
-    const {apiFetched, dashBoard1Data, dashBoard2Data, dashBoard3Data, dashBoard4Data, dashBoard5Data, dashBoard6Data, dashBoardTotalData, loading3, totalB16Count, approvedIMEIB10Count, dashBoard7Data, dashBoard8Data, dashBoard9Data, dashBoard10Data, dashBoard11Data, dashBoard12Data, uniqueB8, granularity, totalIMEIs, compliantIMEIs, nonCompliantIMEIs, approvedB10Count, pairedIMEIs, reportedDevices, registeredIMEIs, totalB7Count, totalB9Count, totalB10Count, detailsB10, uniqueB17, operatorsArray} = this.state;
+    const {apiFetched, OperatorWiseIMEIsData, OperatorWiseTrendData, OperatorWiseBlockingData, TotalIMEIsData, RegisteredDeviceTechnologyData, TopRegisteredBrandsData, dashBoardTotalData, TotalLostStolenCount, approvedIMEIB10Count, PairingTypesData, ActivePairsData, PairsClassificationData, DeviceStatusData, DeviceTrendData, MostStolenBrandsData, uniqueOperatorWiseTrend, granularity, totalIMEIs, compliantIMEIs, nonCompliantIMEIs, ApprovedIMEIsCount, pairedIMEIs, reportedDevices, registeredIMEIs, TotalOperatorWiseIMEIsCount, TotalOperatorWiseBlockingCount, TotalIMEIsCount, detailIMEIs, uniqueLostStolenDeviceTrend, operatorsArray} = this.state;
     const colorClasses = ['bar1', 'bar2', 'bar3', 'bar4'];
     const stolenBarClasses = ['stolen-bar1', 'stolen-bar2', 'stolen-bar3'];
     return (
@@ -213,6 +208,17 @@ class Dashboard extends PureComponent {
         <div className="search-box animated fadeIn">
                   { apiFetched &&
           <article className="overview">
+            <div className="last-updated" 
+              style={{ 
+                textAlign: 'right',
+                position: 'fixed',
+                top: '16px',
+                right: '160px',
+                color: '#fff',
+                fontSize: '1rem',
+                zIndex: '1030'
+              }}
+            ><span>Last Updated: </span>{dashboardLastUpdate}</div>
             <Row>
               <Col xl={2} lg={3} md={4} sm={6}><HeaderCards backgroundColor="#0B6EDE" cardTitle="Total IMEIs" cardText={totalIMEIs.total_core_imeis} avg={totalIMEIs.monthly_total_imeis_avg} trend={totalIMEIs.total_trend_up} percentage={totalIMEIs.total_avg_trend}/></Col>
               <Col xl={2} lg={3} md={4} sm={6}><HeaderCards backgroundColor="#0093C7" cardTitle="Total Valid IMEIs" cardText={compliantIMEIs.core_compliant_imeis} avg={compliantIMEIs.monthly_compliant_imeis_avg} trend={compliantIMEIs.compliant_trend_up} percentage={compliantIMEIs.compliant_avg_trend}/></Col>
@@ -229,7 +235,10 @@ class Dashboard extends PureComponent {
               {/* <div className="column-row"> */}
               <Row>
                 <Col xl={3} lg={4} md={6}>
-                  <div className="box-bgwhite box-shadow radius-p75rem">
+                  <div className="column-header" style={{ backgroundColor: '#ED6364' }}>
+                    <h6>DIRBS Core</h6>
+                  </div>
+                  <div className="box-bgwhite box-shadow radius-p75rem" style={{ border: '#ED6364 1px solid' }}>
 
                     <div className="box-item">
                       <div className="eq-height-box">
@@ -237,22 +246,22 @@ class Dashboard extends PureComponent {
 
                       <div className="box-item-header">
                         <h6 className="item-h6">Operator Wise IMEIs</h6>
-                        <h5 className="item-h5">{yAxisFormatter(totalB7Count)}</h5>
+                        <h5 className="item-h5">{yAxisFormatter(TotalOperatorWiseIMEIsCount)}</h5>
                       </div>
 
                       <div className="box-item-body">
                         <div className="box-list">
                           <ul className="item-list">
-                            {dashBoard1Data.map((val, i) => {
+                            {OperatorWiseIMEIsData.map((val, i) => {
                               return (
-                                <li key={i} style={{color: getMappedColors(dashBoard1Data, operatorsArray)[i]}}><p><label>{formateBackEndString(Object.keys(val)[0])}</label>{val[Object.keys(val)[0]].toLocaleString()}</p></li>
+                                <li key={i} style={{color: getMappedColors(OperatorWiseIMEIsData, operatorsArray)[i]}}><p><label>{formateBackEndString(Object.keys(val)[0])}</label>{val[Object.keys(val)[0]].toLocaleString()}</p></li>
                               );
                             })}
                           </ul>
                         </div>
                         <div className="radial-position-control">
-                          <h5 className="radial-percent" style={{color: getMappedColors(dashBoard1Data, operatorsArray)[0]}}>{((dashBoard1Data[0][Object.keys(dashBoard1Data[0])[0]]/totalB7Count) * 100).toFixed(1)}%</h5>
-                          <DashboardPiechart loading={loading3} data={dashBoard1Data} value="value" colorArray={getMappedColors(dashBoard1Data, operatorsArray)} innerRadiusProp='65%' showLegend={false} isShowHeader={false} isShowLable={false} />
+                          <h5 className="radial-percent" style={{color: getMappedColors(OperatorWiseIMEIsData, operatorsArray)[0]}}>{((OperatorWiseIMEIsData[0][Object.keys(OperatorWiseIMEIsData[0])[0]]/TotalOperatorWiseIMEIsCount) * 100).toFixed(1)}%</h5>
+                          <DashboardPiechart data={OperatorWiseIMEIsData} value="value" colorArray={getMappedColors(OperatorWiseIMEIsData, operatorsArray)} innerRadiusProp='65%' showLegend={false} isShowHeader={false} isShowLable={false} />
                         </div>
                       </div>
 
@@ -271,7 +280,7 @@ class Dashboard extends PureComponent {
 
                       <div className="box-item-body">
                         <div className="item-chart">
-                          <Linechart title="Operator Wise Trend" cardClass="card-dashboard" loading={loading3} data={dashBoard2Data} xAxis="trend_date" yAxes={uniqueB8} colorArray={getMappedColors(Object.entries(dashBoard2Data[0]).map((e) => ({ [e[0]]: e[1] })), operatorsArray)} granularity={granularity} showLegend={false} isShowHeader={false} isShowLable={false} ignoreYaxis="trend_date"  yAxisLabelWidth={36}/>
+                          <Linechart title="Operator Wise Trend" cardClass="card-dashboard" data={OperatorWiseTrendData} xAxis="trend_date" yAxes={uniqueOperatorWiseTrend} colorArray={getMappedColors(Object.entries(OperatorWiseTrendData[0]).map((e) => ({ [e[0]]: e[1] })), operatorsArray)} granularity={granularity} showLegend={false} isShowHeader={false} isShowLable={false} ignoreYaxis="trend_date"  yAxisLabelWidth={36}/>
                         </div>
                       </div>
 
@@ -279,27 +288,27 @@ class Dashboard extends PureComponent {
                       </div>
                     </div>
 
-                    <div className="box-item" style={{ border: '#ED6364 1px solid', borderTop: '#ED6364 8px solid', borderRadius: "8px"}}>
+                    <div className="box-item">
                       <div className="eq-height-box">
                       <div className="eq-height">
 
                       <div className="box-item-header">
                         <h6 className="item-h6">Operator Wise Blocking</h6>
-                        <h5 className="item-h5">{yAxisFormatter(totalB9Count)}</h5>
+                        <h5 className="item-h5">{yAxisFormatter(TotalOperatorWiseBlockingCount)}</h5>
                       </div>
                       <div className="box-item-body">
                         <div className="box-list">
                           <ul className="item-list">
-                            {dashBoard3Data.map((val, i) => {
+                            {OperatorWiseBlockingData.map((val, i) => {
                               return (
-                                <li key={i} style={{color: getMappedColors(dashBoard3Data, operatorsArray)[i]}}><p><label>{formateBackEndString(Object.keys(val)[0])}</label>{val[Object.keys(val)[0]].toLocaleString()}</p></li>
+                                <li key={i} style={{color: getMappedColors(OperatorWiseBlockingData, operatorsArray)[i]}}><p><label>{formateBackEndString(Object.keys(val)[0])}</label>{val[Object.keys(val)[0]].toLocaleString()}</p></li>
                               );
                             })}
                           </ul>
                         </div>
                         <div className="item-chart radial-position-control">
-                            <h5 className="radial-percent">{((totalB9Count/totalB7Count) * 100).toFixed(1)}%</h5>
-                            <DashboardPiechart loading={loading3} data={dashBoard3Data} value="value" colorArray={getMappedColors(dashBoard3Data, operatorsArray)} innerRadiusProp='65%' showLegend={false} isShowHeader={false} isShowLable={false} />
+                            <h5 className="radial-percent">{((TotalOperatorWiseBlockingCount/TotalOperatorWiseIMEIsCount) * 100).toFixed(1)}%</h5>
+                            <DashboardPiechart data={OperatorWiseBlockingData} value="value" colorArray={getMappedColors(OperatorWiseBlockingData, operatorsArray)} innerRadiusProp='65%' showLegend={false} isShowHeader={false} isShowLable={false} />
                         </div>
                       </div>
 
@@ -310,31 +319,35 @@ class Dashboard extends PureComponent {
                   </div>
                 </Col>
                 <Col xl={3} lg={4} md={6}>
-                  <div className="box-bgwhite box-shadow radius-p75rem">
+                  <div className="column-header" style={{ backgroundColor: '#0093C7' }}>
+                    <h6>Device Registration Subsystem</h6>
+                  </div>
+                  <div className="box-bgwhite box-shadow radius-p75rem" style={{ border: '#0093C7 1px solid' }}>
 
-                    <div className="box-item" style={{ backgroundColor: '#0093C7', borderRadius: "0.75rem", color: 'white'}}>
+                    <div className="box-item">
                       <div className="eq-height-box">
                       <div className="eq-height">
 
                       <div className="box-item-header">
                         <h6 className="item-h6">Total IMEIs</h6>
+                        <h5 className="item-h5">{yAxisFormatter(totalB10Count)}</h5>
                       </div>
 
                       <div className="box-item-body">
                         <div className="box-list">
-                          <h5 className="item-h5" style={{color: '#0BD49C'}}>{yAxisFormatter(totalB10Count)}</h5>
+                          <h5 className="item-h5" style={{color: '#0BD49C'}}>{yAxisFormatter(TotalIMEIsCount)}</h5>
                           <div className="h5-list">
-                            {Object.keys(detailsB10).map((key) => {
+                            {Object.keys(detailIMEIs).map((key) => {
                               return (
-                                <h6 key={key}><span>{key}</span>{yAxisFormatter(detailsB10[key])}</h6>
+                                <h6 key={key}><span>{key}</span>{yAxisFormatter(detailIMEIs[key])}</h6>
                               );
                             })}
                           </div>
-                          <p className="approved-devices"><span>Approved Devices </span>|<big>{yAxisFormatter(approvedB10Count)}</big></p>
+                          <p className="approved-devices"><span>Approved Devices </span>|<big>{yAxisFormatter(ApprovedIMEIsCount)}</big></p>
                         </div>
                         <div className="radial-position-control">
-                          <h5 className="radial-percent-grey">{((approvedIMEIB10Count/totalB10Count) * 100).toFixed(1)}%</h5>
-                          <DashboardPiechart loading={loading3} data={dashBoard4Data} value="value" colorArray={statusColorsForBlueBG} innerRadiusProp='63%' showLegend={false} isShowHeader={false} isShowLable={false} />
+                          <h5 className="radial-percent-grey">{((approvedIMEIB10Count/TotalIMEIsCount) * 100).toFixed(1)}%</h5>
+                          <DashboardPiechart data={TotalIMEIsData} value="value" colorArray={statusColorsForBlueBG} innerRadiusProp='63%' showLegend={false} isShowHeader={false} isShowLable={false} />
                         </div>
                       </div>
 
@@ -354,12 +367,11 @@ class Dashboard extends PureComponent {
                       <div className="box-item-body">
                         <div className="item-chart" style={{ marginTop: '10px' }}>
                           {
-                            dashBoard5Data.sort((a, b) => parseFloat(b[Object.keys(b)[0]]) - parseFloat(a[Object.keys(a)[0]])).map((elem, index)=>
+                            RegisteredDeviceTechnologyData.sort((a, b) => parseFloat(b[Object.keys(b)[0]]) - parseFloat(a[Object.keys(a)[0]])).map((elem, index)=>
                             {
                               return <Progress key={index} style={{marginBottom: '8px', borderRadius: '9px', height: '21.2px', borderTop: 'transparent 1px solid'}} value={parseFloat(elem.percentage)} color={colorClasses[index]}><span style={parseFloat(elem.percentage) > 22 ? { color: '#fff'} : { color: '#000'}}>{elem.y_axis} | {Math.round(parseFloat(elem.percentage))}%</span></Progress>
                             })
                           }                    
-                          {/* <HorizontalBarSegregateChart cardClass="card-dashboard" loading={loading5} data={dashBoard5Data} colorArray={stackBar20} isShowHeader={false} barSize={20} barRadius={10} /> */}
                         </div>
                       </div>
 
@@ -367,7 +379,7 @@ class Dashboard extends PureComponent {
                       </div>
                     </div>
 
-                    <div className="box-item" style={{ border: '#0093C7 1px solid', borderTop: '#0093C7 8px solid', borderRadius: "8px"}}>
+                    <div className="box-item">
                       <div className="eq-height-box">
                       <div className="eq-height">
 
@@ -382,16 +394,15 @@ class Dashboard extends PureComponent {
                             <div>100%</div>
                           </div>
                             <Progress style={{borderRadius: '0px', height: '70px'}} multi>
-                            {Object.keys(dashBoard6Data).map((elem, i) => {                           
-                              {let perc =   (dashBoard6Data[elem] / dashBoardTotalData) * 100
+                            {Object.keys(TopRegisteredBrandsData).map((elem, i) => {                           
+                              {let perc =   (TopRegisteredBrandsData[elem] / dashBoardTotalData) * 100
                                return <div key={i} style={{backgroundColor: progressBarColors[i], width: `${perc}%`}}></div> 
                               }                                                 
                             })}
                             </Progress>
-                          {/* <HorizontalBarSegregateChart cardClass="card-dashboard" loading={loading5} data={this.formateDataForB12(dashBoard6Data, multiColors)} colorArray={multiColors} isShowHeader={false} /> */}
                         </div>
                         <ul className="item-bottom-list" style={{ paddingTop: '5px' }}>
-                        {Object.keys(dashBoard6Data).map((elem, i) => {                           
+                        {Object.keys(TopRegisteredBrandsData).map((elem, i) => {                           
                             return (
                               <li key={i} style={{color: progressBarColors[i]}}><p><label>{formateBackEndString(elem)}</label></p></li>
                             );
@@ -406,7 +417,10 @@ class Dashboard extends PureComponent {
                   </div>
                 </Col>
                 <Col xl={3} lg={4} md={6}>
-                  <div className="box-bgwhite box-shadow radius-p75rem">
+                  <div className="column-header" style={{ backgroundColor: '#0BD49C' }}>
+                    <h6>Device Pairing Subsystem</h6>
+                  </div>
+                  <div className="box-bgwhite box-shadow radius-p75rem" style={{ border: '#0BD49C 1px solid' }}>
 
                     <div className="box-item">
                       <div className="eq-height-box">
@@ -419,12 +433,12 @@ class Dashboard extends PureComponent {
                       <div className="box-item-body">
                         <div className="box-list">
                           <ul className="item-list" style={{ paddingTop: '10px' }}>
-                            <li style={{ color: '#2DCD7A'}}><p><label>Primary</label>{dashBoard7Data.primary_pairs.toLocaleString()}</p></li>
-                            <li><p><label>Secondary</label>{dashBoard7Data.secondary_pairs.toLocaleString()}</p></li>
+                            <li style={{ color: '#2DCD7A'}}><p><label>Primary</label>{PairingTypesData.primary_pairs.toLocaleString()}</p></li>
+                            <li><p><label>Secondary</label>{PairingTypesData.secondary_pairs.toLocaleString()}</p></li>
                           </ul>
                         </div>
                         <div className="radial-position-control">
-                          <RadialBarchart titleRadialPercent={`${((dashBoard7Data.primary_pairs/(dashBoard7Data.primary_pairs + dashBoard7Data.secondary_pairs)) * 100).toFixed(2)}%`} innerRadiusProp='50%' data={this.formateDataForB13(dashBoard7Data, colorIMEIsPairing)} value="value" startAngleProp={245} endAngleProp={-60} barSizeProp={9} isFormateData={false} OperatorArray={operatorsArray}/>
+                          <RadialBarchart titleRadialPercent={`${((PairingTypesData.primary_pairs/(PairingTypesData.primary_pairs + PairingTypesData.secondary_pairs)) * 100).toFixed(2)}%`} innerRadiusProp='50%' data={this.formateDataForB13(PairingTypesData, colorIMEIsPairing)} value="value" startAngleProp={245} endAngleProp={-60} barSizeProp={9} isFormateData={false} OperatorArray={operatorsArray}/>
                         </div>
                       </div>
 
@@ -443,7 +457,7 @@ class Dashboard extends PureComponent {
                       <div className="box-item-body">
                         <div className="box-list">
                           <ul className="item-list">
-                            {this.formateDataForB14(dashBoard8Data).map((ele, i) => {
+                            {this.formateDataForB14(ActivePairsData).map((ele, i) => {
                               return (
                                 <li key={i} style={{color: ele.fill}}><p><label>{formateBackEndString(ele.name)}</label>{yAxisFormatter(ele.value)}</p></li>
                               );
@@ -451,7 +465,7 @@ class Dashboard extends PureComponent {
                           </ul>
                         </div>
                         <div className="radial-position-control">
-                          <RadialBarchart data={dashBoard8Data} value="value" isFormateData={true} OperatorArray={operatorsArray}/>
+                          <RadialBarchart data={ActivePairsData} value="value" isFormateData={true} OperatorArray={operatorsArray}/>
                         </div>
                       </div>
 
@@ -459,7 +473,7 @@ class Dashboard extends PureComponent {
                       </div>
                     </div>
 
-                    <div className="box-item" style={{ border: '#0BD49C 1px solid', borderTop: '#0BD49C 8px solid', borderRadius: "8px"}}>
+                    <div className="box-item">
                       <div className="eq-height-box">
                       <div className="eq-height">
 
@@ -470,15 +484,15 @@ class Dashboard extends PureComponent {
                       <div className="box-item-body">
                         <div className="box-list">
                           <ul className="item-list">
-                            {dashBoard9Data.map((val, i) => {
+                            {PairsClassificationData.map((val, i) => {
                               return (
-                                <li key={i} style={{color: getMappedColors(dashBoard9Data, statusColorArray)[i]}}><p><label>{formateBackEndString(Object.keys(val)[0].slice(0, Object.keys(val)[0].lastIndexOf('_')))}</label>{val[Object.keys(val)[0]].toLocaleString()}</p></li>
+                                <li key={i} style={{color: getMappedColors(PairsClassificationData, statusColorArray)[i]}}><p><label>{formateBackEndString(Object.keys(val)[0].slice(0, Object.keys(val)[0].lastIndexOf('_')))}</label>{val[Object.keys(val)[0]].toLocaleString()}</p></li>
                               );
                             })}
                           </ul>
                         </div>
                         <div className="radial-position-control">
-                          <DashboardPiechart loading={loading3} data={dashBoard9Data} value="value" colorArray={getMappedColors(dashBoard9Data, statusColorArray)} showLegend={false} isShowHeader={false} isShowLable={false} paddingProp={2} />
+                          <DashboardPiechart data={PairsClassificationData} value="value" colorArray={getMappedColors(PairsClassificationData, statusColorArray)} showLegend={false} isShowHeader={false} isShowLable={false} paddingProp={2} />
                         </div>
                       </div>
 
@@ -489,7 +503,10 @@ class Dashboard extends PureComponent {
                   </div>
                 </Col>
                 <Col xl={3} lg={4} md={6}>
-                  <div className="box-bgwhite box-shadow radius-p75rem">
+                  <div className="column-header" style={{ backgroundColor: '#FEAC55' }}>
+                    <h6>Lost/Stolen Device Subsystem</h6>
+                  </div>
+                  <div className="box-bgwhite box-shadow radius-p75rem" style={{ border: '#FEAC55 1px solid' }}>
 
                     <div className="box-item">
                       <div className="eq-height-box">
@@ -497,21 +514,20 @@ class Dashboard extends PureComponent {
 
                       <div className="box-item-header">
                         <h6 className="item-h6">Lost/Stolen Device Status</h6>
-                        <h5 className="item-h5">{yAxisFormatter(totalB16Count)}</h5>
+                        <h5 className="item-h5">{yAxisFormatter(TotalLostStolenCount)}</h5>
                       </div>
 
                       <div className="box-item-body">
                         <div className="item-chart" style={{ marginTop: '10px' }}>
                           {
-                            dashBoard10Data.map((elem, index)=>
+                            DeviceStatusData.map((elem, index)=>
                              {
                                return <Progress key={index} style={{marginBottom: '7px', borderRadius: '8px', height: '21.2px', borderTop: 'transparent 1px solid'}} color={stolenBarClasses[index]} value={parseFloat(elem.percentage)}><span style={parseFloat(elem.percentage) > 22 ? { color: '#fff'} : { color: '#000'}}>{Math.round(parseFloat(elem.percentage))}% | {yAxisFormatter(elem.x_axis)}</span></Progress>
                              })
                           }
-                          {/* <HorizontalBarSegregateChart cardClass="card-dashboard" loading={loading5} data={dashBoard10Data} colorArray={BoxesColors} isShowHeader={false} barSize={20} barRadius={10} barCategoryGap={2} /> */}
                         </div>
                         <ul className="item-bottom-list">
-                          {dashBoard10Data.map((val, i) => {
+                          {DeviceStatusData.map((val, i) => {
                             return (
                               <li key={i} style={{color: barBgColors[i]}}><p><label>{formateBackEndString(val.y_axis)}</label></p></li>
                             );
@@ -533,7 +549,7 @@ class Dashboard extends PureComponent {
 
                       <div className="box-item-body">
                         <div className="item-chart">
-                          <Linechart cardClass="card-dashboard" loading={loading3} data={dashBoard11Data} xAxis="trend_date" yAxes={uniqueB17} colorArray={getMappedColors(Object.entries(dashBoard11Data[0]).map((e) => ({ [e[0]]: e[1] })), statusColorArray)} granularity={granularity} showLegend={false} isShowHeader={false} isShowLable={false} ignoreYaxis="trend_date" yAxisLabelWidth={36} />
+                          <Linechart cardClass="card-dashboard" data={DeviceTrendData} xAxis="trend_date" yAxes={uniqueLostStolenDeviceTrend} colorArray={getMappedColors(Object.entries(DeviceTrendData[0]).map((e) => ({ [e[0]]: e[1] })), statusColorArray)} granularity={granularity} showLegend={false} isShowHeader={false} isShowLable={false} ignoreYaxis="trend_date" yAxisLabelWidth={36} />
                         </div>
                       </div>
 
@@ -541,7 +557,7 @@ class Dashboard extends PureComponent {
                       </div>
                     </div>
 
-                    <div className="box-item" style={{ border: '#FEAC55 1px solid', borderTop: '#FEAC55 8px solid', borderRadius: "8px"}}>
+                    <div className="box-item">
                       <div className="eq-height-box">
                       <div className="eq-height">
 
@@ -556,16 +572,15 @@ class Dashboard extends PureComponent {
                             <div>100%</div>
                           </div>
                             <Progress style={{borderRadius: '0px', height: '70px'}} multi>
-                            {Object.keys(dashBoard12Data).map((elem, i) => {                           
-                              {let perc =   (dashBoard12Data[elem] / dashBoardTotalData) * 100
+                            {Object.keys(MostStolenBrandsData).map((elem, i) => {                           
+                              {let perc =   (MostStolenBrandsData[elem] / dashBoardTotalData) * 100
                                return <div key={i} style={{backgroundColor: progressBarColors[i], width: `${perc}%`}}></div> 
                               }                                                 
                             })}
                             </Progress>
-                          {/* <HorizontalBarSegregateChart cardClass="card-dashboard" loading={loading5} data={this.formateDataForB12(dashBoard12Data, BoxesColors.reverse())} colorArray={BoxesColors.reverse()} isShowHeader={false} /> */}
                         </div>
                         <ul className="item-bottom-list" style={{ paddingTop: '5px' }}>
-                        {Object.keys(dashBoard12Data).map((elem, i) => {                           
+                        {Object.keys(MostStolenBrandsData).map((elem, i) => {                           
                             return (
                               <li key={i} style={{color: progressBarColors[i]}}><p><label>{formateBackEndString(elem)}</label></p></li>
                             );

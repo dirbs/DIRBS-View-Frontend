@@ -93,7 +93,7 @@ class BarchartCopy extends PureComponent {
                   container={ this.refs.dest }
                 >
                   <li className="legend-item" onClick={this.handleClick} style={style}>
-                    <Surface width={10} height={10} viewBox="0 0 10 10" onClick={this.handleClick}>
+                    <Surface width={10} height={10} viewbox="0 0 10 10" onClick={this.handleClick}>
                       <Symbols cx={6} cy={6} type="circle" size={50} fill={color} onClick={this.handleClick} />
                     </Surface>
                     <span onClick={this.handleClick}>{dataKey}</span>
@@ -133,7 +133,7 @@ class BarchartCopy extends PureComponent {
                     layout={legendLayout} verticalAlign={legendVerticalAlign} align={legendAlign}
                     wrapperStyle={legendStyle}
                     onClick={this.handleClick} 
-                    content={this.props.legendLayout == "vertical" ? this.scrollableLegend : ""} 
+                    content={this.props.legendLayout == "vertical" ? this.scrollableLegend : null} 
                   />
                   
                   {yAxes.map((model, i) => {

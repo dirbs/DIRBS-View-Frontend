@@ -43,10 +43,6 @@ class HorizontalBarSegregateChart extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
-      opacity: {
-        uv: 1,
-        pv: 1,
-      },
       infoTooltipState: false,
       infoButtonColor: '',
       downloadImgLoading: false
@@ -92,7 +88,7 @@ class HorizontalBarSegregateChart extends PureComponent {
               const { dataKey, color } = entry
               return (
                 <li className="legend-item">
-                  <Surface width={10} height={10} viewBox="0 0 10 10">
+                  <Surface width={10} height={10} viewbox="0 0 10 10">
                     <Symbols cx={6} cy={6} type="square" size={50} fill={color} />
                   </Surface>
                   <span>{dataKey}</span>
@@ -105,27 +101,8 @@ class HorizontalBarSegregateChart extends PureComponent {
     );
   }
 
-  handleMouseEnter = (o) => {
-    const { dataKey } = o;
-    const { opacity } = this.state;
-    
-  	this.setState({
-    	opacity: { ...opacity, [dataKey]: 0.5 },
-    });
-  }
-  
-  handleMouseLeave = (o) => {
-  	const { dataKey } = o;
-    const { opacity } = this.state;
-    
-  	this.setState({
-    	opacity: { ...opacity, [dataKey]: 1 },
-    });
-  }
-
   render(){
     const {title, loading, data, chartMargin, cGrid, barSize, colorArray, yAxisLabel, yAxisLabelAngel, yAxisLabelPosition, yAxesLabelStyle, info, cardClass, isShowHeader, removeChart, chartGridId, heightProp } = this.props;
-    const { opacity } = this.state;
     let toolTipId = "";
     if(info)
     {   
@@ -160,7 +137,7 @@ class HorizontalBarSegregateChart extends PureComponent {
                   <XAxis type="number"  tickFormatter={yAxisFormatter}  style={{fontSize: "11px", fontWeight: "600"}} domain={[0, dataMax => (Math.round(dataMax * 1.1))]}/>
                   <YAxis label={{ value: yAxisLabel, angle: yAxisLabelAngel, position: yAxisLabelPosition, style: yAxesLabelStyle }} type="category"  dataKey={"y_axis"} style={{fontSize: "11px", fontWeight: "600"}} />
                   <Tooltip formatter={(value) => [numberWithCommas(value) ,"Count"]} contentStyle={{borderRadius: '0.5rem', border: '#0093c9 1px solid', borderTopWidth: '4px', padding: '0'}} />
-                  <Bar barSize={barSize} dataKey="x_axis" animationDuration={3000} fill={colorArray[20]}  fillOpacity={opacity}/>
+                  <Bar barSize={barSize} dataKey="x_axis" animationDuration={3000} fill={colorArray[20]}/>
                 </BarChart>
               </ResponsiveContainer>
               : 'No Data Exists'}
