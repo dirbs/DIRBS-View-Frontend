@@ -181,7 +181,8 @@ class Dashboard extends PureComponent {
                   TotalLostStolenCount: response.data.B16_lsds_devices_status.total_devices,
                   uniqueLostStolenDeviceTrend: uniqueDeviceTrend,
                   DeviceTrendData: response.data.B17_lsds_devices_trend.lsds_six_months_trend,
-                  MostStolenBrandsData: response.data.B18_lsds_top_brands
+                  MostStolenBrandsData: response.data.B18_lsds_top_brands,
+                  dashboardLastUpdate: response.data.dashboard_updation_started
                    });
               }
           })
@@ -200,7 +201,7 @@ class Dashboard extends PureComponent {
   }
 
   render() {
-    const {apiFetched, OperatorWiseIMEIsData, OperatorWiseTrendData, OperatorWiseBlockingData, TotalIMEIsData, RegisteredDeviceTechnologyData, TopRegisteredBrandsData, dashBoardTotalData, TotalLostStolenCount, approvedIMEIB10Count, PairingTypesData, ActivePairsData, PairsClassificationData, DeviceStatusData, DeviceTrendData, MostStolenBrandsData, uniqueOperatorWiseTrend, granularity, totalIMEIs, compliantIMEIs, nonCompliantIMEIs, ApprovedIMEIsCount, pairedIMEIs, reportedDevices, registeredIMEIs, TotalOperatorWiseIMEIsCount, TotalOperatorWiseBlockingCount, TotalIMEIsCount, detailIMEIs, uniqueLostStolenDeviceTrend, operatorsArray} = this.state;
+    const {apiFetched, dashboardLastUpdate, OperatorWiseIMEIsData, OperatorWiseTrendData, OperatorWiseBlockingData, TotalIMEIsData, RegisteredDeviceTechnologyData, TopRegisteredBrandsData, dashBoardTotalData, TotalLostStolenCount, approvedIMEIB10Count, PairingTypesData, ActivePairsData, PairsClassificationData, DeviceStatusData, DeviceTrendData, MostStolenBrandsData, uniqueOperatorWiseTrend, granularity, totalIMEIs, compliantIMEIs, nonCompliantIMEIs, ApprovedIMEIsCount, pairedIMEIs, reportedDevices, registeredIMEIs, TotalOperatorWiseIMEIsCount, TotalOperatorWiseBlockingCount, TotalIMEIsCount, detailIMEIs, uniqueLostStolenDeviceTrend, operatorsArray} = this.state;
     const colorClasses = ['bar1', 'bar2', 'bar3', 'bar4'];
     const stolenBarClasses = ['stolen-bar1', 'stolen-bar2', 'stolen-bar3'];
     return (
@@ -208,17 +209,7 @@ class Dashboard extends PureComponent {
         <div className="search-box animated fadeIn">
                   { apiFetched &&
           <article className="overview">
-            <div className="last-updated" 
-              style={{ 
-                textAlign: 'right',
-                position: 'fixed',
-                top: '16px',
-                right: '160px',
-                color: '#fff',
-                fontSize: '1rem',
-                zIndex: '1030'
-              }}
-            ><span>Last Updated: </span>{dashboardLastUpdate}</div>
+            <div className="last-updated"><span>Last Updated: </span>{dashboardLastUpdate}</div>
             <Row>
               <Col xl={2} lg={3} md={4} sm={6}><HeaderCards backgroundColor="#0B6EDE" cardTitle="Total IMEIs" cardText={totalIMEIs.total_core_imeis} avg={totalIMEIs.monthly_total_imeis_avg} trend={totalIMEIs.total_trend_up} percentage={totalIMEIs.total_avg_trend}/></Col>
               <Col xl={2} lg={3} md={4} sm={6}><HeaderCards backgroundColor="#0093C7" cardTitle="Total Valid IMEIs" cardText={compliantIMEIs.core_compliant_imeis} avg={compliantIMEIs.monthly_compliant_imeis_avg} trend={compliantIMEIs.compliant_trend_up} percentage={compliantIMEIs.compliant_avg_trend}/></Col>
@@ -330,12 +321,11 @@ class Dashboard extends PureComponent {
 
                       <div className="box-item-header">
                         <h6 className="item-h6">Total IMEIs</h6>
-                        <h5 className="item-h5">{yAxisFormatter(totalB10Count)}</h5>
+                        <h5 className="item-h5">{yAxisFormatter(TotalIMEIsCount)}</h5>
                       </div>
 
                       <div className="box-item-body">
                         <div className="box-list">
-                          <h5 className="item-h5" style={{color: '#0BD49C'}}>{yAxisFormatter(TotalIMEIsCount)}</h5>
                           <div className="h5-list">
                             {Object.keys(detailIMEIs).map((key) => {
                               return (

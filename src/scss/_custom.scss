@@ -3234,6 +3234,20 @@ article.bglite {
 }
 
 .last-updated {
+    color: #535353;
+	font-size: 1rem;
+	text-align: center;
+	padding-top: 8px;
+
+	@media(min-width: 992px) {
+		position: fixed;
+		top: 16px;
+		right: 160px;
+		color: $white;
+		text-align: right;
+		padding-top: 0px;
+		z-index: 1030;
+	}
 
 	span {
 		font-family: 'SegoeUI-Semibold' !important;
